@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub — Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<div class="max-w-3xl mx-auto px-4 py-8 flex-1 w-full">
+  <h1 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="profile.title"></h1>
+
+  <!-- Personal Info -->
+  <div class="bg-white rounded-xl shadow p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4" data-i18n="profile.personal.title"></h2>
+    <form id="form-personal" data-testid="form-personal" onsubmit="savePersonal(event)" novalidate class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.personal.fullName"></label>
+        <input id="p-fullname" data-testid="profile-fullname" type="text"
+               data-i18n-placeholder="profile.personal.fullName.ph"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.personal.email"></label>
+        <input id="p-email" data-testid="profile-email" type="email" required
+               data-i18n-placeholder="profile.personal.email.ph"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+      </div>
+      <p id="err-personal" data-testid="profile-personal-error" class="text-red-500 text-sm hidden"></p>
+      <button type="submit" id="btn-personal" data-testid="profile-personal-save"
+              class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+              data-i18n="profile.personal.save"></button>
+    </form>
+  </div>
+
+  <!-- Change Password -->
+  <div class="bg-white rounded-xl shadow p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4" data-i18n="profile.password.title"></h2>
+    <form id="form-password" data-testid="form-password" onsubmit="savePassword(event)" novalidate class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.password.current"></label>
+        <input id="p-cur-pw" data-testid="profile-current-password" type="password" required
+               data-i18n-placeholder="profile.password.current.ph"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.password.new"></label>
+        <input id="p-new-pw" data-testid="profile-new-password" type="password" required
+               data-i18n-placeholder="profile.password.new.ph"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.password.confirm"></label>
+        <input id="p-conf-pw" data-testid="profile-confirm-password" type="password" required
+               data-i18n-placeholder="profile.password.confirm.ph"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+      </div>
+      <p id="err-password" data-testid="profile-password-error" class="text-red-500 text-sm hidden"></p>
+      <button type="submit" id="btn-password" data-testid="profile-password-save"
+              class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+              data-i18n="profile.password.save"></button>
+    </form>
+  </div>
+
+  <!-- Default Shipping Address -->
+  <div class="bg-white rounded-xl shadow p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4" data-i18n="profile.address.title"></h2>
+    <form id="form-address" data-testid="form-address" onsubmit="saveAddress(event)" novalidate class="space-y-4">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.name"></label>
+          <input id="a-name" data-testid="profile-shipping-name" type="text"
+                 data-i18n-placeholder="profile.address.name.ph"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.address"></label>
+          <input id="a-address" data-testid="profile-shipping-address" type="text"
+                 data-i18n-placeholder="profile.address.address.ph"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.city"></label>
+          <input id="a-city" data-testid="profile-shipping-city" type="text"
+                 data-i18n-placeholder="profile.address.city.ph"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.postal"></label>
+          <input id="a-postal" data-testid="profile-shipping-postal" type="text"
+                 data-i18n-placeholder="profile.address.postal.ph"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.phone"></label>
+          <input id="a-phone" data-testid="profile-shipping-phone" type="tel"
+                 data-i18n-placeholder="profile.address.phone.ph"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+      </div>
+
+      <!-- Default Payment Method (inline with address form) -->
+      <div class="pt-2 border-t border-gray-100">
+        <h3 class="text-sm font-semibold text-gray-700 mb-3" data-i18n="profile.payment.title"></h3>
+        <div class="grid sm:grid-cols-3 gap-3">
+          <label data-testid="payment-credit-card"
+                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50 transition-colors">
+            <input type="radio" name="payment" value="credit_card" id="pm-cc" class="mt-0.5 accent-yellow-400" />
+            <div>
+              <p class="font-semibold text-sm text-gray-800" data-i18n="profile.payment.creditCard"></p>
+              <p class="text-xs text-gray-400">Visa, Mastercard, JCB</p>
+            </div>
+          </label>
+          <label data-testid="payment-bank-transfer"
+                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50 transition-colors">
+            <input type="radio" name="payment" value="bank_transfer" id="pm-bt" class="mt-0.5 accent-yellow-400" />
+            <div>
+              <p class="font-semibold text-sm text-gray-800" data-i18n="profile.payment.bankTransfer"></p>
+              <p class="text-xs text-gray-400">SCB, KBank, BBL</p>
+            </div>
+          </label>
+          <label data-testid="payment-cod"
+                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50 transition-colors">
+            <input type="radio" name="payment" value="cod" id="pm-cod" class="mt-0.5 accent-yellow-400" />
+            <div>
+              <p class="font-semibold text-sm text-gray-800" data-i18n="profile.payment.cod"></p>
+              <p class="text-xs text-gray-400" data-i18n="checkout.payment.cod.sub"></p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <p id="err-address" data-testid="profile-address-error" class="text-red-500 text-sm hidden"></p>
+      <button type="submit" id="btn-address" data-testid="profile-address-save"
+              class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+              data-i18n="profile.address.save"></button>
+    </form>
+  </div>
+</div>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  function setLoading(btnId, loading, key) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.textContent = loading ? i18n.t('btn.saving') : i18n.t(key);
+  }
+
+  function showErr(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.toggle('hidden', !msg);
+  }
+
+  async function savePersonal(e) {
+    e.preventDefault();
+    const email = document.getElementById('p-email').value.trim();
+    if (!email) { showErr('err-personal', i18n.t('error.generic')); return; }
+    showErr('err-personal', '');
+    setLoading('btn-personal', true, 'profile.personal.save');
+    try {
+      const u = await api.updateProfile({
+        full_name: document.getElementById('p-fullname').value.trim() || null,
+        email,
+      });
+      auth.setUser(u);
+      showToast(i18n.t('profile.personal.saved'));
+    } catch (ex) {
+      showErr('err-personal', ex.detail || i18n.t('error.generic'));
+    } finally {
+      setLoading('btn-personal', false, 'profile.personal.save');
+    }
+  }
+
+  async function savePassword(e) {
+    e.preventDefault();
+    const cur  = document.getElementById('p-cur-pw').value;
+    const nw   = document.getElementById('p-new-pw').value;
+    const conf = document.getElementById('p-conf-pw').value;
+    if (!cur || !nw || !conf) { showErr('err-password', i18n.t('profile.password.error.req')); return; }
+    if (nw !== conf)           { showErr('err-password', i18n.t('profile.password.error.mismatch')); return; }
+    showErr('err-password', '');
+    setLoading('btn-password', true, 'profile.password.save');
+    try {
+      await api.updatePassword({ current_password: cur, new_password: nw });
+      document.getElementById('form-password').reset();
+      showToast(i18n.t('profile.password.saved'));
+    } catch (ex) {
+      showErr('err-password', ex.detail || i18n.t('error.generic'));
+    } finally {
+      setLoading('btn-password', false, 'profile.password.save');
+    }
+  }
+
+  async function saveAddress(e) {
+    e.preventDefault();
+    showErr('err-address', '');
+    setLoading('btn-address', true, 'profile.address.save');
+    const payment = document.querySelector('input[name="payment"]:checked')?.value || 'credit_card';
+    try {
+      const u = await api.updateAddress({
+        default_shipping_name:    document.getElementById('a-name').value.trim()    || null,
+        default_shipping_address: document.getElementById('a-address').value.trim() || null,
+        default_shipping_city:    document.getElementById('a-city').value.trim()    || null,
+        default_shipping_postal:  document.getElementById('a-postal').value.trim()  || null,
+        default_shipping_phone:   document.getElementById('a-phone').value.trim()   || null,
+        default_payment_method:   payment,
+      });
+      auth.setUser(u);
+      showToast(i18n.t('profile.address.saved'));
+    } catch (ex) {
+      showErr('err-address', ex.detail || i18n.t('error.generic'));
+    } finally {
+      setLoading('btn-address', false, 'profile.address.save');
+    }
+  }
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireLogin()) return;
+    await renderNav();
+    const user = await api.me();
+    auth.setUser(user);
+
+    document.getElementById('p-fullname').value = user.full_name || '';
+    document.getElementById('p-email').value    = user.email || '';
+
+    document.getElementById('a-name').value    = user.default_shipping_name    || '';
+    document.getElementById('a-address').value = user.default_shipping_address || '';
+    document.getElementById('a-city').value    = user.default_shipping_city    || '';
+    document.getElementById('a-postal').value  = user.default_shipping_postal  || '';
+    document.getElementById('a-phone').value   = user.default_shipping_phone   || '';
+
+    const pm = user.default_payment_method || 'credit_card';
+    const radio = document.querySelector(`input[name="payment"][value="${pm}"]`);
+    if (radio) radio.checked = true;
+  })();
+</script>
+</body>
+</html>

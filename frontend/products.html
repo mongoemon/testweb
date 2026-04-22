@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6" data-i18n="products.title"></h1>
+
+  <!-- Search + Filters -->
+  <div class="bg-white rounded-xl shadow p-4 mb-6">
+    <div class="flex flex-wrap gap-3">
+      <input id="search-input" data-testid="search-input" type="text"
+             data-i18n-placeholder="products.search.placeholder"
+             class="flex-1 min-w-48 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+
+      <select id="filter-category" data-testid="filter-category"
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <option value="" data-i18n="products.allCategories"></option>
+      </select>
+
+      <select id="filter-brand" data-testid="filter-brand"
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <option value="" data-i18n="products.allBrands"></option>
+        <option>Nike</option><option>Adidas</option><option>New Balance</option>
+        <option>Converse</option><option>Vans</option><option>Puma</option>
+        <option>Reebok</option>
+      </select>
+
+      <select id="filter-size" data-testid="filter-size"
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <option value="" data-i18n="products.allSizes"></option>
+        <option>36</option><option>37</option><option>38</option><option>39</option>
+        <option>40</option><option>41</option><option>42</option><option>43</option>
+        <option>44</option><option>45</option><option>46</option>
+      </select>
+
+      <select id="filter-sort" data-testid="filter-sort"
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <option value="newest" data-i18n="products.sort.newest"></option>
+        <option value="price_asc" data-i18n="products.sort.priceAsc"></option>
+        <option value="price_desc" data-i18n="products.sort.priceDesc"></option>
+        <option value="name_asc" data-i18n="products.sort.nameAsc"></option>
+      </select>
+
+      <button id="search-btn" data-testid="search-btn"
+              class="bg-yellow-400 text-gray-900 px-6 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors"
+              data-i18n="btn.search"></button>
+      <button id="clear-btn" data-testid="clear-filters-btn"
+              class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              data-i18n="btn.clear"></button>
+    </div>
+  </div>
+
+  <!-- Results header -->
+  <div class="flex justify-between items-center mb-4">
+    <p data-testid="product-count" id="result-count" class="text-gray-500 text-sm"></p>
+  </div>
+
+  <!-- Product grid -->
+  <div id="product-grid" data-testid="product-grid"
+       class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 min-h-64">
+    <div class="col-span-full text-center py-20 text-gray-400" data-i18n="loading"></div>
+  </div>
+
+  <!-- Pagination -->
+  <div id="pagination" data-testid="pagination" class="flex justify-center gap-2 mt-10"></div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  let currentPage = 1;
+  let totalPages = 1;
+
+  function getFilters() {
+    return {
+      search:   document.getElementById('search-input').value.trim(),
+      category: document.getElementById('filter-category').value,
+      brand:    document.getElementById('filter-brand').value,
+      size:     document.getElementById('filter-size').value,
+      sort:     document.getElementById('filter-sort').value,
+      page:     currentPage,
+      limit:    12,
+    };
+  }
+
+  function productCard(p) {
+    return `
+      <a href="/product.html?id=${p.id}" data-testid="product-card" data-product-id="${p.id}"
+         class="bg-white rounded-xl shadow hover:shadow-md transition-shadow overflow-hidden group">
+        <div class="relative overflow-hidden h-48 bg-gray-100">
+          <img src="${p.image_url || 'https://picsum.photos/seed/' + p.id + '/400/300'}"
+               alt="${p.name}" loading="lazy"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          ${p.stock === 0 ? `<span class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold">${i18n.t('products.outOfStock')}</span>` : ''}
+        </div>
+        <div class="p-4">
+          <p data-testid="product-brand" class="text-xs text-gray-400 uppercase">${p.brand || ''}</p>
+          <h3 data-testid="product-name" class="font-semibold text-gray-800 mt-0.5">${p.name}</h3>
+          <p class="text-xs text-gray-400">${p.category_name || ''}</p>
+          <p data-testid="product-price" class="mt-2 text-yellow-600 font-bold text-lg">${formatPrice(p.price)}</p>
+        </div>
+      </a>`;
+  }
+
+  function renderPagination(total, page, pages) {
+    if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+    const btns = [];
+    for (let i = 1; i <= pages; i++) {
+      btns.push(`<button onclick="goPage(${i})" data-testid="page-btn" data-page="${i}"
+        class="px-4 py-2 rounded-lg text-sm font-medium ${i === page ? 'bg-yellow-400 text-gray-900' : 'bg-white border border-gray-300 hover:bg-gray-50'}">${i}</button>`);
+    }
+    document.getElementById('pagination').innerHTML = btns.join('');
+  }
+
+  async function loadProducts() {
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400">${i18n.t('loading')}</div>`;
+    try {
+      const data = await api.getProducts(getFilters());
+      totalPages = data.pages;
+      document.getElementById('result-count').textContent = i18n.t('products.count', data.total);
+      if (data.items.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400" data-testid="empty-state">${i18n.t('products.empty')}</div>`;
+      } else {
+        grid.innerHTML = data.items.map(productCard).join('');
+      }
+      renderPagination(data.total, data.page, data.pages);
+    } catch (e) {
+      grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-400" data-testid="error-state">${i18n.t('error.generic')}: ${e.detail || ''}</div>`;
+    }
+  }
+
+  function goPage(p) { currentPage = p; loadProducts(); window.scrollTo(0, 0); }
+
+  async function loadCategories() {
+    const cats = await api.getCategories();
+    const sel = document.getElementById('filter-category');
+    cats.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id; opt.textContent = c.name;
+      sel.appendChild(opt);
+    });
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('category')) sel.value = params.get('category');
+  }
+
+  document.getElementById('search-btn').addEventListener('click', () => { currentPage = 1; loadProducts(); });
+  document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') { currentPage = 1; loadProducts(); } });
+  document.getElementById('clear-btn').addEventListener('click', () => {
+    document.getElementById('search-input').value = '';
+    document.getElementById('filter-category').value = '';
+    document.getElementById('filter-brand').value = '';
+    document.getElementById('filter-size').value = '';
+    document.getElementById('filter-sort').value = 'newest';
+    currentPage = 1;
+    loadProducts();
+  });
+
+  (async () => {
+    i18n.apply();
+    await renderNav();
+    await loadCategories();
+    await loadProducts();
+  })();
+</script>
+</body>
+</html>

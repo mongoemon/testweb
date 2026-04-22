@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<main class="max-w-4xl mx-auto px-4 py-10 flex-1 w-full">
+  <h1 class="text-3xl font-bold text-gray-800 mb-8" data-i18n="orders.title"></h1>
+  <div id="orders-container" data-testid="orders-container">
+    <div class="text-center py-20 text-gray-400" data-i18n="loading"></div>
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  async function loadOrders() {
+    const container = document.getElementById('orders-container');
+    try {
+      const orders = await api.getOrders();
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20" data-testid="empty-orders">
+            <div class="text-6xl mb-4">📦</div>
+            <p class="text-gray-500 text-lg mb-4">${i18n.t('orders.empty')}</p>
+            <a href="/products.html" class="inline-block bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition-colors">
+              ${i18n.t('orders.shopNow')}
+            </a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => `
+        <div data-testid="order-card" data-order-id="${order.id}"
+             class="bg-white rounded-xl shadow mb-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div class="flex flex-wrap justify-between items-center p-5 gap-3">
+            <div>
+              <p class="text-sm text-gray-400">${i18n.t('orders.col.id')}</p>
+              <p data-testid="order-id" class="font-bold text-lg text-gray-800">${order.id}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-sm text-gray-400">${i18n.t('orders.col.date')}</p>
+              <p data-testid="order-date" class="font-medium">${formatDate(order.created_at)}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-sm text-gray-400">${i18n.t('orders.col.items')}</p>
+              <p class="font-medium">${i18n.t('orders.items', order.items.length)}</p>
+            </div>
+            <div class="text-center">
+              <p class="text-sm text-gray-400">${i18n.t('orders.col.total')}</p>
+              <p data-testid="order-total" class="font-bold text-yellow-600">${formatPrice(order.total_amount)}</p>
+            </div>
+            <div class="text-center">
+              <span data-testid="order-status"
+                    class="inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusClass(order.status)}">
+                ${getStatusLabel(order.status)}
+              </span>
+            </div>
+            <a href="/order-detail.html?id=${order.id}" data-testid="view-order-${order.id}"
+               class="text-yellow-600 hover:text-yellow-700 font-medium text-sm">
+              ${i18n.t('orders.viewDetail')}
+            </a>
+          </div>
+        </div>`).join('');
+    } catch (e) {
+      container.innerHTML = `<div class="text-center py-20 text-red-400" data-testid="orders-error">${i18n.t('error.generic')}: ${e.detail || ''}</div>`;
+    }
+  }
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireLogin()) return;
+    await renderNav();
+    await loadOrders();
+  })();
+</script>
+</body>
+</html>

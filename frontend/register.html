@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<main class="flex-1 flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <a href="/" class="text-3xl font-extrabold text-yellow-500">👟 ShoesHub</a>
+      <h1 class="text-2xl font-bold text-gray-800 mt-4" data-i18n="auth.register.title"></h1>
+      <p class="text-gray-500 mt-1" data-i18n="auth.register.subtitle"></p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <form id="register-form" data-testid="register-form" onsubmit="handleRegister(event)" novalidate>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.fullName"></label>
+          <input id="full-name" data-testid="full-name-input" name="full_name" type="text"
+                 data-i18n-placeholder="auth.register.fullName.ph"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.username"></label>
+          <input id="username" data-testid="username-input" name="username" type="text"
+                 required autocomplete="username" data-i18n-placeholder="auth.register.username.ph"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.email"></label>
+          <input id="email" data-testid="email-input" name="email" type="email"
+                 required autocomplete="email" data-i18n-placeholder="auth.register.email.ph"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.password"></label>
+          <input id="password" data-testid="password-input" name="password" type="password"
+                 required autocomplete="new-password" data-i18n-placeholder="auth.register.password.ph"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.confirmPw"></label>
+          <input id="confirm-password" data-testid="confirm-password-input" name="confirm_password" type="password"
+                 required autocomplete="new-password" data-i18n-placeholder="auth.register.confirmPw.ph"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+
+        <p id="register-error" data-testid="register-error" class="text-red-500 text-sm mb-4 hidden" role="alert"></p>
+        <p id="register-success" data-testid="register-success" class="text-green-600 text-sm mb-4 hidden" role="status"></p>
+
+        <button type="submit" id="register-btn" data-testid="register-btn"
+                class="w-full bg-yellow-400 text-gray-900 py-3 rounded-xl font-bold text-base hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                data-i18n="auth.register.submit"></button>
+      </form>
+
+      <p class="text-center text-sm text-gray-500 mt-6">
+        <span data-i18n="auth.register.hasAccount"></span>
+        <a href="/login.html" data-testid="login-link" class="text-yellow-600 font-semibold hover:text-yellow-700"
+           data-i18n="auth.register.loginLink"></a>
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  auth.redirectIfLoggedIn('/');
+  i18n.apply();
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('register-error');
+    const okEl  = document.getElementById('register-success');
+    errEl.classList.add('hidden');
+    okEl.classList.add('hidden');
+
+    const username = document.getElementById('username').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm  = document.getElementById('confirm-password').value;
+    const fullName = document.getElementById('full-name').value.trim();
+
+    if (!username || !email || !password) {
+      errEl.textContent = i18n.t('auth.register.error.req');
+      errEl.classList.remove('hidden');
+      return;
+    }
+    if (password !== confirm) {
+      errEl.textContent = i18n.t('auth.register.error.pwMismatch');
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('register-btn');
+    btn.disabled = true;
+    btn.textContent = i18n.t('auth.register.submitting');
+
+    try {
+      const data = await api.register({ username, email, password, full_name: fullName || null });
+      auth.save(data);
+      okEl.textContent = i18n.t('auth.register.success');
+      okEl.classList.remove('hidden');
+      setTimeout(() => { window.location.href = '/'; }, 1000);
+    } catch (ex) {
+      errEl.textContent = ex.detail || i18n.t('error.generic');
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = i18n.t('auth.register.submit');
+    }
+  }
+
+  renderNav();
+</script>
+</body>
+</html>

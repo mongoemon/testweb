@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<div class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+  <!-- Admin nav -->
+  <div class="flex gap-3 mb-6 text-sm font-medium">
+    <a href="/admin/index.html"    data-testid="admin-nav-dashboard" class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.dashboard"></a>
+    <a href="/admin/products.html" data-testid="admin-nav-products"  class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.manageProducts"></a>
+    <a href="/admin/orders.html"   data-testid="admin-nav-orders"    class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg" data-i18n="admin.manageOrders"></a>
+  </div>
+
+  <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+    <h1 class="text-2xl font-bold text-gray-800" data-i18n="admin.manageOrders"></h1>
+    <select id="status-filter" data-testid="status-filter-select"
+            class="border border-gray-300 bg-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+      <option value="" data-i18n="admin.filter.allStatus"></option>
+      <option value="pending"    data-i18n="status.pending"></option>
+      <option value="confirmed"  data-i18n="status.confirmed"></option>
+      <option value="processing" data-i18n="status.processing"></option>
+      <option value="shipped"    data-i18n="status.shipped"></option>
+      <option value="delivered"  data-i18n="status.delivered"></option>
+      <option value="cancelled"  data-i18n="status.cancelled"></option>
+    </select>
+  </div>
+
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="py-3 px-4 text-left" data-i18n="admin.col.order"></th>
+          <th class="py-3 text-left" data-i18n="admin.col.user"></th>
+          <th class="py-3 text-left" data-i18n="admin.col.date"></th>
+          <th class="py-3 text-left" data-i18n="admin.col.address"></th>
+          <th class="py-3 text-right px-4" data-i18n="admin.col.total"></th>
+          <th class="py-3 text-center" data-i18n="admin.col.status"></th>
+          <th class="py-3 text-center" data-i18n="admin.col.changeStatus"></th>
+        </tr>
+      </thead>
+      <tbody id="orders-table" data-testid="orders-table">
+        <tr><td colspan="7" class="text-center py-10 text-gray-400" data-i18n="loading"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.admin"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  const STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+  async function loadOrders() {
+    const tbody = document.getElementById('orders-table');
+    const status = document.getElementById('status-filter').value;
+    try {
+      const orders = await api.getAdminOrders(status);
+      if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-gray-400" data-testid="no-orders">${i18n.t('admin.noOrders')}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = orders.map(o => `
+        <tr data-testid="order-row" data-order-id="${o.id}" class="border-t border-gray-100 hover:bg-gray-50">
+          <td class="py-3 px-4">
+            <a href="/order-detail.html?id=${o.id}" class="text-yellow-600 font-bold hover:underline">#${o.id}</a>
+          </td>
+          <td class="py-3">${o.username}</td>
+          <td class="py-3">${formatDate(o.created_at)}</td>
+          <td class="py-3 text-xs text-gray-500 max-w-xs truncate">${o.shipping_name || ''}, ${o.shipping_city || ''}</td>
+          <td class="py-3 text-right px-4 font-semibold text-yellow-600">${formatPrice(o.total_amount)}</td>
+          <td class="py-3 text-center">
+            <span data-testid="order-status-${o.id}"
+                  class="px-2 py-1 rounded-full text-xs font-semibold ${getStatusClass(o.status)}">
+              ${getStatusLabel(o.status)}
+            </span>
+          </td>
+          <td class="py-3 text-center">
+            <select data-testid="status-select-${o.id}" onchange="updateStatus(${o.id}, this.value)"
+                    class="border border-gray-300 rounded-lg text-xs px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              ${STATUSES.map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${getStatusLabel(s)}</option>`).join('')}
+            </select>
+          </td>
+        </tr>`).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-red-400">${e.detail || i18n.t('error.generic')}</td></tr>`;
+    }
+  }
+
+  async function updateStatus(orderId, newStatus) {
+    try {
+      await api.updateOrderStatus(orderId, newStatus);
+      showToast(i18n.t('admin.order.updated', orderId));
+      await loadOrders();
+    } catch (e) { showToast(e.detail, 'error'); }
+  }
+
+  document.getElementById('status-filter').addEventListener('change', loadOrders);
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireAdmin()) return;
+    await renderNav();
+    await loadOrders();
+  })();
+</script>
+</body>
+</html>

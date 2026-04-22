@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<div class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+  <!-- Admin nav -->
+  <div class="flex gap-3 mb-6 text-sm font-medium">
+    <a href="/admin/index.html"    data-testid="admin-nav-dashboard" class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.dashboard"></a>
+    <a href="/admin/products.html" data-testid="admin-nav-products"  class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg" data-i18n="admin.manageProducts"></a>
+    <a href="/admin/orders.html"   data-testid="admin-nav-orders"    class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.manageOrders"></a>
+  </div>
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800" data-i18n="admin.manageProducts"></h1>
+    <button onclick="openModal()" data-testid="add-product-btn"
+            class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors"
+            data-i18n="admin.addProduct"></button>
+  </div>
+
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="py-3 px-4 text-left" data-i18n="admin.col.image"></th>
+          <th class="py-3 px-4 text-left" data-i18n="admin.col.name"></th>
+          <th class="py-3 text-left" data-i18n="admin.col.brand"></th>
+          <th class="py-3 text-left" data-i18n="admin.col.category"></th>
+          <th class="py-3 text-right" data-i18n="admin.col.price"></th>
+          <th class="py-3 text-center" data-i18n="admin.col.stock"></th>
+          <th class="py-3 text-center" data-i18n="admin.col.status"></th>
+          <th class="py-3 text-center" data-i18n="admin.col.manage"></th>
+        </tr>
+      </thead>
+      <tbody id="product-table" data-testid="product-table">
+        <tr><td colspan="8" class="text-center py-10 text-gray-400" data-i18n="loading"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="product-modal" data-testid="product-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center p-6 border-b">
+      <h2 id="modal-title" class="text-lg font-bold text-gray-800"></h2>
+      <button onclick="closeModal()" data-testid="modal-close-btn" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+    </div>
+    <form id="product-form" data-testid="product-form" onsubmit="saveProduct(event)" class="p-6 space-y-4" novalidate>
+      <input type="hidden" id="edit-id" />
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.name"></label>
+          <input id="f-name" data-testid="product-form-name" type="text" required
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.brand"></label>
+          <input id="f-brand" data-testid="product-form-brand" type="text"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.category"></label>
+          <select id="f-category" data-testid="product-form-category"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+            <option value="" data-i18n="admin.product.selCat"></option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.price"></label>
+          <input id="f-price" data-testid="product-form-price" type="number" min="0" step="0.01" required
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.stock"></label>
+          <input id="f-stock" data-testid="product-form-stock" type="number" min="0" value="0"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.imageUrl"></label>
+          <input id="f-image" data-testid="product-form-image" type="url"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.sizes"></label>
+          <input id="f-sizes" data-testid="product-form-sizes" type="text"
+                 data-i18n-placeholder="admin.product.sizes.ph"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.desc"></label>
+          <textarea id="f-desc" data-testid="product-form-description" rows="3"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="f-active" data-testid="product-form-active" type="checkbox" checked
+                 class="w-4 h-4 text-yellow-400" />
+          <label for="f-active" class="text-sm font-medium text-gray-700" data-i18n="admin.product.active"></label>
+        </div>
+      </div>
+
+      <p id="form-error" data-testid="product-form-error" class="text-red-500 text-sm hidden"></p>
+
+      <div class="flex gap-3 pt-2">
+        <button type="submit" id="save-btn" data-testid="product-save-btn"
+                class="flex-1 bg-yellow-400 text-gray-900 py-2.5 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                data-i18n="btn.save"></button>
+        <button type="button" onclick="closeModal()" data-testid="product-cancel-btn"
+                class="flex-1 border border-gray-300 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                data-i18n="btn.cancel"></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.admin"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  let categories = [];
+
+  async function loadProducts() {
+    const tbody = document.getElementById('product-table');
+    try {
+      const data = await api.getProducts({ limit: 100 });
+      if (data.items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-gray-400">${i18n.t('admin.noProducts')}</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = data.items.map(p => `
+        <tr data-testid="product-row" data-product-id="${p.id}" class="border-t border-gray-100 hover:bg-gray-50">
+          <td class="py-3 px-4">
+            <img src="${p.image_url || 'https://picsum.photos/seed/' + p.id + '/60/60'}"
+                 class="w-12 h-12 object-cover rounded-lg bg-gray-100" alt="${p.name}" />
+          </td>
+          <td class="py-3 px-4 font-medium text-gray-800">${p.name}</td>
+          <td class="py-3">${p.brand || '-'}</td>
+          <td class="py-3">${p.category_name || '-'}</td>
+          <td class="py-3 text-right font-semibold text-yellow-600">${formatPrice(p.price)}</td>
+          <td class="py-3 text-center">${p.stock}</td>
+          <td class="py-3 text-center">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold ${p.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}">
+              ${p.is_active ? i18n.t('admin.product.active.yes') : i18n.t('admin.product.active.no')}
+            </span>
+          </td>
+          <td class="py-3 text-center">
+            <button onclick="editProduct(${p.id})" data-testid="edit-product-${p.id}"
+                    class="text-blue-500 hover:text-blue-700 mr-3 font-medium text-xs">${i18n.t('btn.edit')}</button>
+            <button onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" data-testid="delete-product-${p.id}"
+                    class="text-red-400 hover:text-red-600 font-medium text-xs">${i18n.t('btn.delete')}</button>
+          </td>
+        </tr>`).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-red-400">${e.detail || i18n.t('error.generic')}</td></tr>`;
+    }
+  }
+
+  async function loadCategories() {
+    categories = await api.getCategories();
+    const sel = document.getElementById('f-category');
+    categories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id; opt.textContent = c.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function openModal(product = null) {
+    document.getElementById('modal-title').textContent = product
+      ? i18n.t('admin.product.edit')
+      : i18n.t('admin.product.add');
+    document.getElementById('edit-id').value       = product ? product.id : '';
+    document.getElementById('f-name').value        = product ? product.name : '';
+    document.getElementById('f-brand').value       = product ? (product.brand || '') : '';
+    document.getElementById('f-category').value    = product ? (product.category_id || '') : '';
+    document.getElementById('f-price').value       = product ? product.price : '';
+    document.getElementById('f-stock').value       = product ? product.stock : 0;
+    document.getElementById('f-image').value       = product ? (product.image_url || '') : '';
+    document.getElementById('f-sizes').value       = product ? (product.sizes || []).join(',') : '';
+    document.getElementById('f-desc').value        = product ? (product.description || '') : '';
+    document.getElementById('f-active').checked   = product ? product.is_active : true;
+    document.getElementById('form-error').classList.add('hidden');
+    document.getElementById('product-modal').classList.remove('hidden');
+    document.getElementById('f-name').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('product-modal').classList.add('hidden');
+  }
+
+  async function editProduct(id) {
+    try {
+      const p = await api.getProduct(id);
+      openModal(p);
+    } catch (e) { showToast(e.detail, 'error'); }
+  }
+
+  async function deleteProduct(id, name) {
+    if (!confirm(i18n.t('admin.product.delConfirm', name))) return;
+    try {
+      await api.deleteProduct(id);
+      showToast(i18n.t('admin.product.deleted'));
+      await loadProducts();
+    } catch (e) { showToast(e.detail, 'error'); }
+  }
+
+  async function saveProduct(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('form-error');
+    errEl.classList.add('hidden');
+
+    const name  = document.getElementById('f-name').value.trim();
+    const price = parseFloat(document.getElementById('f-price').value);
+    if (!name || isNaN(price)) {
+      errEl.textContent = i18n.t('admin.product.err.req');
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true; btn.textContent = i18n.t('btn.saving');
+
+    const payload = {
+      name,
+      brand:       document.getElementById('f-brand').value.trim() || null,
+      category_id: parseInt(document.getElementById('f-category').value) || null,
+      price,
+      stock:       parseInt(document.getElementById('f-stock').value) || 0,
+      image_url:   document.getElementById('f-image').value.trim() || null,
+      sizes:       document.getElementById('f-sizes').value.split(',').map(s => s.trim()).filter(Boolean),
+      description: document.getElementById('f-desc').value.trim() || null,
+      is_active:   document.getElementById('f-active').checked,
+    };
+
+    const editId = document.getElementById('edit-id').value;
+    try {
+      if (editId) {
+        await api.updateProduct(editId, payload);
+        showToast(i18n.t('admin.product.updated'));
+      } else {
+        await api.createProduct(payload);
+        showToast(i18n.t('admin.product.created'));
+      }
+      closeModal();
+      await loadProducts();
+    } catch (ex) {
+      errEl.textContent = ex.detail || i18n.t('error.generic');
+      errEl.classList.remove('hidden');
+    } finally {
+      btn.disabled = false; btn.textContent = i18n.t('btn.save');
+    }
+  }
+
+  document.getElementById('product-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('product-modal')) closeModal();
+  });
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireAdmin()) return;
+    await renderNav();
+    await Promise.all([loadCategories(), loadProducts()]);
+  })();
+</script>
+</body>
+</html>

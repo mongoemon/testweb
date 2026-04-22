@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<main class="max-w-5xl mx-auto px-4 py-10 flex-1 w-full">
+  <h1 class="text-3xl font-bold text-gray-800 mb-8" data-i18n="checkout.title"></h1>
+
+  <div class="grid lg:grid-cols-3 gap-8">
+    <!-- Form -->
+    <div class="lg:col-span-2">
+      <form id="checkout-form" data-testid="checkout-form" onsubmit="placeOrder(event)" novalidate>
+
+        <!-- Shipping Info -->
+        <div class="bg-white rounded-2xl shadow p-6 mb-6">
+          <h2 class="text-lg font-bold text-gray-800 mb-4" data-i18n="checkout.shipping.title"></h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.name"></label>
+              <input id="shipping-name" data-testid="shipping-name" name="shipping_name" type="text"
+                     required data-i18n-placeholder="checkout.shipping.name.ph"
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.address"></label>
+              <input id="shipping-address" data-testid="shipping-address" name="shipping_address" type="text"
+                     required data-i18n-placeholder="checkout.shipping.address.ph"
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.city"></label>
+              <input id="shipping-city" data-testid="shipping-city" name="shipping_city" type="text"
+                     required data-i18n-placeholder="checkout.shipping.city.ph"
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.postal"></label>
+              <input id="shipping-postal" data-testid="shipping-postal" name="shipping_postal" type="text"
+                     required data-i18n-placeholder="checkout.shipping.postal.ph"
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.phone"></label>
+              <input id="shipping-phone" data-testid="shipping-phone" name="shipping_phone" type="tel"
+                     required data-i18n-placeholder="checkout.shipping.phone.ph"
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="bg-white rounded-2xl shadow p-6 mb-6">
+          <h2 class="text-lg font-bold text-gray-800 mb-4" data-i18n="checkout.payment.title"></h2>
+          <div class="space-y-3" data-testid="payment-methods">
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50">
+              <input type="radio" name="payment_method" value="credit_card" checked
+                     data-testid="payment-credit-card" class="text-yellow-500" />
+              <span class="text-2xl">💳</span>
+              <div>
+                <div class="font-medium" data-i18n="checkout.payment.creditCard"></div>
+                <div class="text-xs text-gray-400" data-i18n="checkout.payment.creditCard.sub"></div>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50">
+              <input type="radio" name="payment_method" value="bank_transfer"
+                     data-testid="payment-bank-transfer" class="text-yellow-500" />
+              <span class="text-2xl">🏦</span>
+              <div>
+                <div class="font-medium" data-i18n="checkout.payment.bankTransfer"></div>
+                <div class="text-xs text-gray-400" data-i18n="checkout.payment.bankTransfer.sub"></div>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50">
+              <input type="radio" name="payment_method" value="cod"
+                     data-testid="payment-cod" class="text-yellow-500" />
+              <span class="text-2xl">💵</span>
+              <div>
+                <div class="font-medium" data-i18n="checkout.payment.cod"></div>
+                <div class="text-xs text-gray-400" data-i18n="checkout.payment.cod.sub"></div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <p id="form-error" data-testid="form-error" class="text-red-500 text-sm mb-3 hidden"></p>
+
+        <button type="submit" id="submit-btn" data-testid="place-order-btn"
+                class="w-full bg-yellow-400 text-gray-900 py-4 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                data-i18n="checkout.submit"></button>
+      </form>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-2xl shadow p-6 sticky top-20">
+        <h2 class="text-lg font-bold text-gray-800 mb-4" data-i18n="checkout.summary.title"></h2>
+        <div id="order-summary" data-testid="order-summary">
+          <div class="text-center text-gray-400 py-4" data-i18n="loading"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  let cartData = null;
+
+  async function loadOrderSummary() {
+    const summary = document.getElementById('order-summary');
+    try {
+      cartData = await api.getCart();
+      if (cartData.items.length === 0) {
+        window.location.href = '/cart.html';
+        return;
+      }
+      summary.innerHTML = `
+        <div class="space-y-3">
+          ${cartData.items.map(i => `
+            <div class="flex justify-between text-sm">
+              <div>
+                <span class="font-medium">${i.name}</span>
+                ${i.size ? `<span class="text-gray-400"> (${i.size})</span>` : ''}
+                <span class="text-gray-400"> ×${i.quantity}</span>
+              </div>
+              <span>${formatPrice(i.subtotal)}</span>
+            </div>`).join('')}
+        </div>
+        <div class="border-t mt-4 pt-4">
+          <div class="flex justify-between text-sm text-gray-500 mb-1">
+            <span>${i18n.t('checkout.summary.shipping')}</span>
+            <span class="text-green-600">${i18n.t('checkout.summary.free')}</span>
+          </div>
+          <div class="flex justify-between font-bold text-lg">
+            <span>${i18n.t('checkout.summary.total')}</span>
+            <span data-testid="checkout-total" class="text-yellow-600">${formatPrice(cartData.total)}</span>
+          </div>
+        </div>`;
+    } catch (e) {
+      summary.innerHTML = `<p class="text-red-400 text-sm">${e.detail || i18n.t('error.generic')}</p>`;
+    }
+  }
+
+  async function placeOrder(e) {
+    e.preventDefault();
+    const form = e.target;
+    const errEl = document.getElementById('form-error');
+    errEl.classList.add('hidden');
+
+    const fields = ['shipping-name', 'shipping-address', 'shipping-city', 'shipping-postal', 'shipping-phone'];
+    for (const id of fields) {
+      if (!document.getElementById(id).value.trim()) {
+        errEl.textContent = i18n.t('checkout.error.required');
+        errEl.classList.remove('hidden');
+        document.getElementById(id).focus();
+        return;
+      }
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = i18n.t('checkout.submitting');
+
+    const payload = {
+      shipping_name:    document.getElementById('shipping-name').value.trim(),
+      shipping_address: document.getElementById('shipping-address').value.trim(),
+      shipping_city:    document.getElementById('shipping-city').value.trim(),
+      shipping_postal:  document.getElementById('shipping-postal').value.trim(),
+      shipping_phone:   document.getElementById('shipping-phone').value.trim(),
+      payment_method:   form.querySelector('input[name="payment_method"]:checked').value,
+    };
+
+    try {
+      const order = await api.placeOrder(payload);
+      window.location.href = `/order-detail.html?id=${order.id}&success=1`;
+    } catch (ex) {
+      errEl.textContent = ex.detail || i18n.t('error.generic');
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = i18n.t('checkout.submit');
+    }
+  }
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireLogin()) return;
+    await renderNav();
+    await Promise.all([loadOrderSummary(), prefillFromProfile()]);
+  })();
+
+  async function prefillFromProfile() {
+    try {
+      const user = await api.me();
+      if (user.default_shipping_name)    document.getElementById('shipping-name').value    = user.default_shipping_name;
+      if (user.default_shipping_address) document.getElementById('shipping-address').value = user.default_shipping_address;
+      if (user.default_shipping_city)    document.getElementById('shipping-city').value    = user.default_shipping_city;
+      if (user.default_shipping_postal)  document.getElementById('shipping-postal').value  = user.default_shipping_postal;
+      if (user.default_shipping_phone)   document.getElementById('shipping-phone').value   = user.default_shipping_phone;
+      if (user.default_payment_method) {
+        const radio = document.querySelector(`input[name="payment_method"][value="${user.default_payment_method}"]`);
+        if (radio) radio.checked = true;
+      }
+    } catch { /* not critical */ }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<main class="flex-1 flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <a href="/" class="text-3xl font-extrabold text-yellow-500">👟 ShoesHub</a>
+      <h1 class="text-2xl font-bold text-gray-800 mt-4" data-i18n="auth.login.title"></h1>
+      <p class="text-gray-500 mt-1" data-i18n="auth.login.subtitle"></p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <form id="login-form" data-testid="login-form" onsubmit="handleLogin(event)" novalidate>
+
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.login.username"></label>
+          <input id="username" data-testid="username-input" name="username" type="text"
+                 required autocomplete="username" data-i18n-placeholder="auth.login.username.ph"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow" />
+        </div>
+
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.login.password"></label>
+          <div class="relative">
+            <input id="password" data-testid="password-input" name="password" type="password"
+                   required autocomplete="current-password" data-i18n-placeholder="auth.login.password.ph"
+                   class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow pr-12" />
+            <button type="button" onclick="togglePassword()" data-testid="toggle-password"
+                    class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">👁</button>
+          </div>
+        </div>
+
+        <p id="login-error" data-testid="login-error" class="text-red-500 text-sm mb-4 hidden" role="alert"></p>
+
+        <button type="submit" id="login-btn" data-testid="login-btn"
+                class="w-full bg-yellow-400 text-gray-900 py-3 rounded-xl font-bold text-base hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                data-i18n="auth.login.submit"></button>
+      </form>
+
+      <p class="text-center text-sm text-gray-500 mt-6">
+        <span data-i18n="auth.login.noAccount"></span>
+        <a href="/register.html" data-testid="register-link" class="text-yellow-600 font-semibold hover:text-yellow-700"
+           data-i18n="auth.login.registerLink"></a>
+      </p>
+    </div>
+
+    <!-- Demo accounts -->
+    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
+      <p class="font-semibold mb-2" data-i18n="auth.login.testAccounts"></p>
+      <p>Admin: <code class="bg-blue-100 px-1 rounded">admin</code> / <code class="bg-blue-100 px-1 rounded">admin1234</code></p>
+      <p>User: <code class="bg-blue-100 px-1 rounded">testuser</code> / <code class="bg-blue-100 px-1 rounded">test1234</code></p>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  auth.redirectIfLoggedIn('/');
+  i18n.apply();
+
+  function togglePassword() {
+    const inp = document.getElementById('password');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('login-error');
+    errEl.classList.add('hidden');
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!username || !password) {
+      errEl.textContent = i18n.t('auth.login.error.req');
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true;
+    btn.textContent = i18n.t('auth.login.submitting');
+
+    try {
+      const data = await api.login({ username, password });
+      auth.save(data);
+      const redirect = new URLSearchParams(window.location.search).get('redirect') || '/';
+      window.location.href = redirect;
+    } catch (ex) {
+      errEl.textContent = ex.detail || i18n.t('auth.login.title') + ' ' + i18n.t('error.generic').toLowerCase();
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = i18n.t('auth.login.submit');
+    }
+  }
+
+  renderNav();
+</script>
+</body>
+</html>

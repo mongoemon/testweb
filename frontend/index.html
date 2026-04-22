@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<!-- Hero -->
+<section data-testid="hero-section" class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white py-20">
+  <div class="max-w-7xl mx-auto px-4 text-center">
+    <h1 class="text-5xl font-extrabold mb-4 leading-tight">
+      <span data-i18n="home.hero.title"></span> <span class="text-yellow-400" data-i18n="home.hero.highlight"></span>
+    </h1>
+    <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto" data-i18n="home.hero.subtitle"></p>
+    <a href="/products.html" data-testid="hero-shop-btn"
+       class="inline-block bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-colors shadow-lg"
+       data-i18n="home.hero.cta"></a>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="max-w-7xl mx-auto px-4 py-12">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="home.categories.title"></h2>
+  <div id="categories-grid" data-testid="categories-section" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="animate-pulse bg-gray-200 h-28 rounded-xl"></div>
+    <div class="animate-pulse bg-gray-200 h-28 rounded-xl"></div>
+    <div class="animate-pulse bg-gray-200 h-28 rounded-xl"></div>
+    <div class="animate-pulse bg-gray-200 h-28 rounded-xl"></div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="max-w-7xl mx-auto px-4 pb-16">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800" data-i18n="home.featured.title"></h2>
+    <a href="/products.html" data-testid="view-all-link" class="text-yellow-600 hover:text-yellow-700 font-medium"
+       data-i18n="home.featured.viewAll"></a>
+  </div>
+  <div id="featured-grid" data-testid="featured-products" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div class="animate-pulse bg-white rounded-xl h-64"></div>
+    <div class="animate-pulse bg-white rounded-xl h-64"></div>
+    <div class="animate-pulse bg-white rounded-xl h-64"></div>
+    <div class="animate-pulse bg-white rounded-xl h-64"></div>
+  </div>
+</section>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  const CAT_ICONS = { running: '🏃', casual: '👟', basketball: '🏀', lifestyle: '✨' };
+  const CAT_COLORS = {
+    running: 'from-orange-400 to-red-500',
+    casual: 'from-blue-400 to-blue-600',
+    basketball: 'from-purple-400 to-purple-600',
+    lifestyle: 'from-green-400 to-teal-500',
+  };
+
+  function productCard(p) {
+    return `
+      <a href="/product.html?id=${p.id}" data-testid="product-card" data-product-id="${p.id}"
+         class="bg-white rounded-xl shadow hover:shadow-md transition-shadow overflow-hidden group">
+        <div class="relative overflow-hidden h-48 bg-gray-100">
+          <img src="${p.image_url || 'https://picsum.photos/seed/' + p.id + '/400/300'}"
+               alt="${p.name}" loading="lazy"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          ${p.stock <= 5 && p.stock > 0 ? `<span class="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">${i18n.t('products.lowStock')}</span>` : ''}
+          ${p.stock === 0 ? `<span class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold">${i18n.t('products.outOfStock')}</span>` : ''}
+        </div>
+        <div class="p-4">
+          <p data-testid="product-brand" class="text-xs text-gray-400 uppercase tracking-wide">${p.brand || ''}</p>
+          <h3 data-testid="product-name" class="font-semibold text-gray-800 mt-0.5 leading-tight">${p.name}</h3>
+          <p data-testid="product-price" class="mt-2 text-yellow-600 font-bold text-lg">${formatPrice(p.price)}</p>
+        </div>
+      </a>`;
+  }
+
+  async function loadCategories() {
+    const cats = await api.getCategories();
+    document.getElementById('categories-grid').innerHTML = cats.map(c => `
+      <a href="/products.html?category=${c.id}" data-testid="category-card" data-category-slug="${c.slug}"
+         class="bg-gradient-to-br ${CAT_COLORS[c.slug] || 'from-gray-400 to-gray-600'} text-white rounded-xl p-6 text-center hover:scale-105 transition-transform shadow">
+        <div class="text-3xl mb-2">${CAT_ICONS[c.slug] || '👟'}</div>
+        <div class="font-semibold">${c.name}</div>
+      </a>`).join('');
+  }
+
+  async function loadFeatured() {
+    const data = await api.getProducts({ limit: 8, sort: 'newest' });
+    document.getElementById('featured-grid').innerHTML = data.items.map(productCard).join('');
+  }
+
+  (async () => {
+    i18n.apply();
+    await renderNav();
+    await Promise.all([loadCategories(), loadFeatured()]);
+  })();
+</script>
+</body>
+</html>

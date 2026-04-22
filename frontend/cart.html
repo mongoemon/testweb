@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<main class="max-w-5xl mx-auto px-4 py-10 flex-1 w-full">
+  <h1 class="text-3xl font-bold text-gray-800 mb-8" data-i18n="cart.title"></h1>
+
+  <div id="cart-container" data-testid="cart-container">
+    <div class="text-center py-20 text-gray-400" data-i18n="loading"></div>
+  </div>
+</main>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-6 text-sm mt-auto">
+  <span data-i18n="footer.copy"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  async function loadCart() {
+    const container = document.getElementById('cart-container');
+    try {
+      const cart = await api.getCart();
+      if (cart.items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20" data-testid="empty-cart">
+            <div class="text-6xl mb-4">🛒</div>
+            <p class="text-gray-500 text-lg mb-4">${i18n.t('cart.empty')}</p>
+            <a href="/products.html" data-testid="continue-shopping-link"
+               class="inline-block bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition-colors">
+              ${i18n.t('cart.shopNow')}
+            </a>
+          </div>`;
+        return;
+      }
+
+      const itemsHtml = cart.items.map(item => `
+        <tr data-testid="cart-item" data-item-id="${item.id}" class="border-b border-gray-100">
+          <td class="py-4 pr-4">
+            <div class="flex items-center gap-4">
+              <img src="${item.image_url || 'https://picsum.photos/seed/' + item.product_id + '/100/100'}"
+                   alt="${item.name}" class="w-20 h-20 object-cover rounded-lg bg-gray-100" />
+              <div>
+                <a href="/product.html?id=${item.product_id}"
+                   data-testid="cart-item-name"
+                   class="font-semibold text-gray-800 hover:text-yellow-600">${item.name}</a>
+                <p class="text-sm text-gray-400">${item.brand || ''}</p>
+                ${item.size ? `<p class="text-sm text-gray-500">${i18n.t('cart.size')} <span data-testid="cart-item-size">${item.size}</span></p>` : ''}
+              </div>
+            </div>
+          </td>
+          <td class="py-4 text-center">
+            <span data-testid="cart-item-price" class="text-yellow-600 font-semibold">${formatPrice(item.price)}</span>
+          </td>
+          <td class="py-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="updateItem(${item.id}, ${item.quantity - 1})" data-testid="qty-decrease-${item.id}"
+                      class="w-8 h-8 border border-gray-300 rounded-full hover:bg-gray-100 font-bold">−</button>
+              <span data-testid="cart-item-qty" class="w-8 text-center font-medium">${item.quantity}</span>
+              <button onclick="updateItem(${item.id}, ${item.quantity + 1})" data-testid="qty-increase-${item.id}"
+                      class="w-8 h-8 border border-gray-300 rounded-full hover:bg-gray-100 font-bold">+</button>
+            </div>
+          </td>
+          <td class="py-4 text-center">
+            <span data-testid="cart-item-subtotal" class="font-semibold">${formatPrice(item.subtotal)}</span>
+          </td>
+          <td class="py-4 text-center">
+            <button onclick="removeItem(${item.id})" data-testid="remove-item-${item.id}"
+                    class="text-red-400 hover:text-red-600 transition-colors" aria-label="${i18n.t('btn.delete')}">
+              ✕
+            </button>
+          </td>
+        </tr>`).join('');
+
+      container.innerHTML = `
+        <div class="bg-white rounded-2xl shadow overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+              <tr>
+                <th class="py-3 px-4 text-left">${i18n.t('cart.col.product')}</th>
+                <th class="py-3 text-center">${i18n.t('cart.col.price')}</th>
+                <th class="py-3 text-center">${i18n.t('cart.col.qty')}</th>
+                <th class="py-3 text-center">${i18n.t('cart.col.subtotal')}</th>
+                <th class="py-3 text-center"></th>
+              </tr>
+            </thead>
+            <tbody data-testid="cart-items" class="px-4">${itemsHtml}</tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row justify-between items-start gap-4">
+          <button onclick="clearCart()" data-testid="clear-cart-btn"
+                  class="text-red-400 hover:text-red-600 text-sm border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
+            ${i18n.t('cart.clear')}
+          </button>
+          <div class="bg-white rounded-xl shadow p-6 w-full sm:w-72">
+            <div class="flex justify-between text-gray-600 mb-2 text-sm">
+              <span>${i18n.t('cart.allItems')}</span>
+              <span>${cart.count}</span>
+            </div>
+            <div class="flex justify-between font-bold text-xl border-t pt-3 mt-3">
+              <span>${i18n.t('cart.total')}</span>
+              <span data-testid="cart-total" class="text-yellow-600">${formatPrice(cart.total)}</span>
+            </div>
+            <a href="/checkout.html" data-testid="checkout-btn"
+               class="mt-4 w-full block text-center bg-yellow-400 text-gray-900 py-3 rounded-xl font-bold hover:bg-yellow-300 transition-colors">
+              ${i18n.t('cart.checkout')}
+            </a>
+            <a href="/products.html" data-testid="continue-shopping-link"
+               class="mt-2 block text-center text-sm text-gray-400 hover:text-gray-600">
+              ${i18n.t('cart.continueShopping')}
+            </a>
+          </div>
+        </div>`;
+    } catch (e) {
+      container.innerHTML = `<div class="text-center py-20 text-red-400" data-testid="cart-error">${i18n.t('error.generic')}: ${e.detail || ''}</div>`;
+    }
+  }
+
+  async function updateItem(itemId, qty) {
+    if (qty < 1) return;
+    try {
+      await api.updateCartItem(itemId, { quantity: qty });
+      await loadCart();
+      await renderNav();
+    } catch (e) { showToast(e.detail, 'error'); }
+  }
+
+  async function removeItem(itemId) {
+    try {
+      await api.removeCartItem(itemId);
+      showToast(i18n.t('cart.removed'), 'info');
+      await loadCart();
+      await renderNav();
+    } catch (e) { showToast(e.detail, 'error'); }
+  }
+
+  async function clearCart() {
+    if (!confirm(i18n.t('cart.clearConfirm'))) return;
+    try {
+      await api.clearCart();
+      showToast(i18n.t('cart.cleared'), 'info');
+      await loadCart();
+      await renderNav();
+    } catch (e) { showToast(e.detail, 'error'); }
+  }
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireLogin()) return;
+    await renderNav();
+    await loadCart();
+  })();
+</script>
+</body>
+</html>
