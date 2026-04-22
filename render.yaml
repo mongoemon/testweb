@@ -1,8 +1,8 @@
 # Render.com Blueprint — 3 environments
-# Each service deploys from its own branch:
-#   qa      branch → QA      (auto-seed, fresh DB per deploy)
-#   staging branch → STAGING (no auto-seed, stable data)
-#   main    branch → PROD    (no auto-seed, production data)
+# Branch → Environment:
+#   qa      → QA      (auto-seed, fresh DB per deploy)
+#   staging → STAGING (no auto-seed, stable data)
+#   main    → PROD    (no auto-seed, production data)
 
 services:
 
@@ -10,10 +10,9 @@ services:
   - type: web
     name: shoeshub-qa
     env: python
-    rootDir: backend
     branch: qa
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
         value: qa
@@ -30,10 +29,9 @@ services:
   - type: web
     name: shoeshub-staging
     env: python
-    rootDir: backend
     branch: staging
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
         value: staging
@@ -50,10 +48,9 @@ services:
   - type: web
     name: shoeshub-prod
     env: python
-    rootDir: backend
     branch: main
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
         value: prod
