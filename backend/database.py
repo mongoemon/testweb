@@ -1,7 +1,8 @@
 import sqlite3
-import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "shop.db")
+from config import DATABASE_URL
+
+DB_PATH = DATABASE_URL
 
 
 def get_db():

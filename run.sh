@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
 set -e
 
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 echo "============================================"
-echo "  ShoesHub E-Commerce (Automation Testing)"
+echo "  ShoesHub — DEV"
 echo "============================================"
 
-cd "$(dirname "$0")/backend"
+# Load dev environment variables
+if [ -f "$ROOT_DIR/.env.dev" ]; then
+    set -a
+    source "$ROOT_DIR/.env.dev"
+    set +a
+    echo "[ENV] Loaded .env.dev"
+fi
 
-echo "[1/3] Installing dependencies..."
+cd "$ROOT_DIR/backend"
+
+echo "[1/2] Installing dependencies..."
 pip install -r requirements.txt --quiet
 
-echo "[2/3] Seeding database..."
-python seed.py
-
-echo "[3/3] Starting server at http://localhost:8000"
+echo "[2/2] Starting server at http://localhost:8000"
 echo ""
 echo "  Frontend : http://localhost:8000/"
 echo "  API Docs : http://localhost:8000/docs"
@@ -23,4 +30,5 @@ echo "  Test accounts:"
 echo "    Admin  : admin / admin1234"
 echo "    User   : testuser / test1234"
 echo ""
+
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload

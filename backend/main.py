@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+import config
 from database import init_db, migrate_db
 from routes import admin, auth, cart, orders, products
 from seed import seed
@@ -92,7 +93,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=config.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -112,11 +113,13 @@ app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static")
 def startup():
     init_db()
     migrate_db()
-    seed()
-    print("[OK] Database initialized")
+    if config.AUTO_SEED:
+        seed()
+    env_label = config.ENVIRONMENT.upper()
+    print(f"[ENV] {env_label} | debug={config.DEBUG} | auto_seed={config.AUTO_SEED}")
+    print(f"[OK] Database : {config.DATABASE_URL}")
     print(f"[OK] Frontend : http://localhost:8000/")
     print(f"[OK] Swagger  : http://localhost:8000/docs")
-    print(f"[OK] ReDoc    : http://localhost:8000/redoc")
 
 
 if __name__ == "__main__":

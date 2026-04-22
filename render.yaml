@@ -1,10 +1,67 @@
+# Render.com Blueprint — 3 environments
+# Each service deploys from its own branch:
+#   qa      branch → QA      (auto-seed, fresh DB per deploy)
+#   staging branch → STAGING (no auto-seed, stable data)
+#   main    branch → PROD    (no auto-seed, production data)
+
 services:
+
+  # ── QA ───────────────────────────────────────────────────────────────────
   - type: web
-    name: shoeshub
+    name: shoeshub-qa
     env: python
     rootDir: backend
+    branch: qa
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+      - key: ENVIRONMENT
+        value: qa
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: AUTO_SEED
+        value: "true"
+      - key: CORS_ORIGINS
+        value: "*"
+
+  # ── STAGING ──────────────────────────────────────────────────────────────
+  - type: web
+    name: shoeshub-staging
+    env: python
+    rootDir: backend
+    branch: staging
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: staging
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: AUTO_SEED
+        value: "false"
+      - key: CORS_ORIGINS
+        value: "*"
+
+  # ── PROD ─────────────────────────────────────────────────────────────────
+  - type: web
+    name: shoeshub-prod
+    env: python
+    rootDir: backend
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: prod
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: AUTO_SEED
+        value: "false"
+      - key: CORS_ORIGINS
+        value: "*"

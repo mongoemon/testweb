@@ -1,17 +1,27 @@
 @echo off
 echo ============================================
-echo   ShoesHub E-Commerce (Automation Testing)
+echo   ShoesHub -- DEV
 echo ============================================
 
-cd /d "%~dp0backend"
+cd /d "%~dp0"
 
-echo [1/3] Installing dependencies...
+rem Load .env.dev variables
+if exist .env.dev (
+    for /f "usebackq tokens=1,* delims==" %%a in (".env.dev") do (
+        if not "%%a"=="" (
+            set "line=%%a"
+            if not "!line:~0,1!"=="#" set "%%a=%%b"
+        )
+    )
+    echo [ENV] Loaded .env.dev
+)
+
+cd backend
+
+echo [1/2] Installing dependencies...
 pip install -r requirements.txt --quiet
 
-echo [2/3] Seeding database...
-python seed.py
-
-echo [3/3] Starting server at http://localhost:8000
+echo [2/2] Starting server at http://localhost:8000
 echo.
 echo  Frontend : http://localhost:8000/
 echo  API Docs : http://localhost:8000/docs
@@ -21,4 +31,5 @@ echo  Test accounts:
 echo    Admin  : admin / admin1234
 echo    User   : testuser / test1234
 echo.
+
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload

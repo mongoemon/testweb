@@ -14,6 +14,13 @@ env/
 # Database
 backend/shop.db
 
+# Environment — commit .env.dev and .env.example only
+.env
+.env.local
+.env.qa
+.env.staging
+.env.prod
+
 # OS
 .DS_Store
 Thumbs.db
@@ -22,4 +29,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Claude
 .claude/
