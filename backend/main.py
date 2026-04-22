@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from database import init_db, migrate_db
 from routes import admin, auth, cart, orders, products
+from seed import seed
 
 TAGS_METADATA = [
     {
@@ -111,6 +112,7 @@ app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static")
 def startup():
     init_db()
     migrate_db()
+    seed()
     print("[OK] Database initialized")
     print(f"[OK] Frontend : http://localhost:8000/")
     print(f"[OK] Swagger  : http://localhost:8000/docs")
