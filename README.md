@@ -409,3 +409,61 @@ cd backend
 rm shop.db       # Windows: del shop.db
 python seed.py
 ```
+
+---
+
+## Deploy to Render.com (QA Environment)
+
+> Free tier รองรับ **1 web service** ฟรี — ใช้ branch `qa` สำหรับ environment นี้
+
+### ขั้นตอน
+
+**1. ให้สิทธิ์ Render เข้าถึง repo**
+
+Render ใช้ GitHub App ในการดึง repo list หากหา `testweb` ไม่เจอในหน้า New Web Service:
+
+1. คลิก **Credentials → Manage** (มุมขวาของช่องค้นหา repo)
+2. หน้า GitHub จะเปิด → ไปที่ **Repository access**
+3. เลือก **Only select repositories** → เพิ่ม `mongoemon/testweb`
+4. กด **Save** แล้วกลับมาที่ Render ค้นใหม่
+
+**2. สร้าง Web Service**
+
+- Render dashboard → **New → Web Service**
+- เลือก repo `mongoemon/testweb`
+- ตั้งค่าดังนี้:
+
+| Field | Value |
+|-------|-------|
+| Name | `shoeshub-qa` |
+| Branch | `qa` |
+| Build Command | `cd backend && pip install -r requirements.txt` |
+| Start Command | `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT` |
+
+**3. เพิ่ม Environment Variables**
+
+| Key | Value |
+|-----|-------|
+| `ENVIRONMENT` | `qa` |
+| `AUTO_SEED` | `true` |
+| `SECRET_KEY` | *(กด Generate ให้ Render สร้างให้)* |
+
+**4. Deploy**
+
+กด **Create Web Service** — Render จะ build และ deploy อัตโนมัติ  
+URL จะอยู่ในรูป `https://shoeshub-qa.onrender.com`
+
+### หมายเหตุ
+
+- **Free tier จะ sleep** หลังไม่มี traffic 15 นาที — request แรกหลัง sleep จะช้า ~30 วินาที
+- **Database เป็น ephemeral** — ข้อมูลจะหายทุกครั้งที่ redeploy (จึงตั้ง `AUTO_SEED=true` ให้ seed ใหม่อัตโนมัติ)
+- **Blueprint** (`render.yaml`) ใช้สร้างหลาย service พร้อมกันได้ แต่ต้องใช้ plan แบบเสียเงิน
+
+### Environments
+
+| Environment | Branch | วัตถุประสงค์ |
+|-------------|--------|-------------|
+| DEV | local | นักพัฒนาทดสอบ local |
+| QA | `qa` | QA team ทดสอบหลัง dev เสร็จ |
+| STAGING | `staging` | ทดสอบ pre-production |
+| PROD | `main` | Production จริง |
