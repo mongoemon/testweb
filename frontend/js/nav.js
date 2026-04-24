@@ -20,18 +20,18 @@ async function renderNav() {
 
   const linksHtml = links.map(l =>
     `<a href="${l.href}" data-testid="${l.testid}"
-        class="hover:text-yellow-300 transition-colors ${path === l.href ? 'text-yellow-300 font-semibold' : ''}"
+        class="transition-colors ${path === l.href ? 'nav-active' : ''}"
       >${l.label}</a>`
   ).join('');
 
   const authHtml = user
-    ? `<a href="/cart.html" data-testid="nav-cart" class="relative hover:text-yellow-300 transition-colors">
+    ? `<a href="/cart.html" data-testid="nav-cart" class="relative transition-colors">
          🛒 ${i18n.t('nav.cart')}${cartBadge}
        </a>
-       <a href="/orders.html" data-testid="nav-orders" class="hover:text-yellow-300 transition-colors">📦 ${i18n.t('nav.orders')}</a>
-       ${isAdmin ? `<a href="/admin/index.html" data-testid="nav-admin" class="hover:text-yellow-300 transition-colors">⚙️ ${i18n.t('nav.admin')}</a>` : ''}
+       <a href="/orders.html" data-testid="nav-orders" class="transition-colors">📦 ${i18n.t('nav.orders')}</a>
+       ${isAdmin ? `<a href="/admin/index.html" data-testid="nav-admin" class="transition-colors">⚙️ ${i18n.t('nav.admin')}</a>` : ''}
        <div class="relative" id="user-menu-wrap">
-         <button onclick="_toggleUserMenu(event)" data-testid="nav-user-menu" class="hover:text-yellow-300 transition-colors px-1">
+         <button onclick="_toggleUserMenu(event)" data-testid="nav-user-menu" class="transition-colors px-1">
            👤 ${user.username} ▾
          </button>
          <div id="user-menu" class="absolute right-0 top-full mt-1 bg-white text-gray-800 rounded shadow-lg py-1 min-w-max hidden z-50">
@@ -42,22 +42,25 @@ async function renderNav() {
              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">${i18n.t('nav.logout')}</button>
          </div>
        </div>`
-    : `<a href="/login.html"    data-testid="nav-login"    class="hover:text-yellow-300 transition-colors">${i18n.t('nav.login')}</a>
-       <a href="/register.html" data-testid="nav-register" class="bg-yellow-400 text-gray-900 px-4 py-1.5 rounded-full font-semibold hover:bg-yellow-300 transition-colors">${i18n.t('nav.register')}</a>`;
+    : `<a href="/login.html"    data-testid="nav-login"    class="transition-colors">${i18n.t('nav.login')}</a>
+       <a href="/register.html" data-testid="nav-register" class="px-4 py-1.5 rounded-full font-semibold transition-colors">${i18n.t('nav.register')}</a>`;
 
   const nav = `
-    <nav data-testid="navbar" class="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
+    <nav data-testid="navbar" class="shadow-sm sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <a href="/" data-testid="nav-logo" class="flex items-center gap-2 text-xl font-bold text-yellow-400">
+          <a href="/" data-testid="nav-logo" class="flex items-center gap-2 text-xl font-bold tracking-tight">
             👟 ShoesHub
           </a>
           <div class="hidden md:flex items-center gap-6 text-sm">${linksHtml}</div>
           <div class="flex items-center gap-4 text-sm">
             ${authHtml}
             ${i18n.renderSwitcher()}
+            <button id="theme-toggle-btn" onclick="theme.toggle()" title="Switch theme"
+                    class="text-base leading-none opacity-70 hover:opacity-100 transition-opacity">
+            </button>
           </div>
-          <button id="mobile-menu-btn" class="md:hidden text-white" aria-label="Toggle menu">
+          <button id="mobile-menu-btn" class="md:hidden" aria-label="Toggle menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
@@ -84,6 +87,14 @@ async function renderNav() {
   document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
     document.getElementById('mobile-menu')?.classList.toggle('hidden');
   });
+
+  // Set theme toggle icon after render
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) {
+    const isOriginal = theme.current() === 'original';
+    btn.textContent = isOriginal ? '🔵' : '🟡';
+    btn.title = isOriginal ? 'Switch to Minimal' : 'Switch to Original';
+  }
 }
 
 function _toggleLangMenu(e) {

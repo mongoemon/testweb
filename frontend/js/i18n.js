@@ -611,13 +611,13 @@ const i18n = {
   renderSwitcher() {
     const options = Object.entries(this.langs).map(([code, name]) => `
       <button onclick="i18n.setLang('${code}')"
-              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors${code === this.current ? ' font-semibold text-yellow-600 bg-yellow-50' : ''}">
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors${code === this.current ? ' font-semibold text-primary-600 bg-primary-50' : ''}">
         ${name}
       </button>`).join('');
     return `
       <div class="relative" id="lang-switcher-wrap">
         <button onclick="_toggleLangMenu(event)"
-                class="flex items-center gap-1 hover:text-yellow-300 transition-colors px-1" aria-label="Change language">
+                class="flex items-center gap-1 hover:text-primary-300 transition-colors px-1" aria-label="Change language">
           🌐 <span class="hidden sm:inline text-sm">${this.langs[this.current]}</span>
         </button>
         <div id="lang-menu" class="absolute right-0 top-full mt-1 bg-white text-gray-800 rounded-lg shadow-lg py-1 min-w-max hidden z-50 border border-gray-100">

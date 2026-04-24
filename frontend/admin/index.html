@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub Admin</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -13,7 +21,7 @@
 <div class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
   <!-- Admin nav -->
   <div class="flex gap-3 mb-6 text-sm font-medium">
-    <a href="/admin/index.html" data-testid="admin-nav-dashboard" class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg"
+    <a href="/admin/index.html" data-testid="admin-nav-dashboard" class="bg-primary-400 text-on-primary px-4 py-2 rounded-lg"
        data-i18n="admin.dashboard"></a>
     <a href="/admin/products.html" data-testid="admin-nav-products" class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm"
        data-i18n="admin.manageProducts"></a>
@@ -31,7 +39,7 @@
     </div>
     <div class="bg-white rounded-xl shadow p-5" data-testid="stat-pending-orders">
       <p class="text-xs text-gray-400 uppercase" data-i18n="admin.stats.pending"></p>
-      <p id="stat-pending" class="text-3xl font-bold text-yellow-500 mt-1">-</p>
+      <p id="stat-pending" class="text-3xl font-bold text-primary-500 mt-1">-</p>
     </div>
     <div class="bg-white rounded-xl shadow p-5" data-testid="stat-revenue">
       <p class="text-xs text-gray-400 uppercase" data-i18n="admin.stats.revenue"></p>
@@ -51,7 +59,7 @@
   <div class="bg-white rounded-xl shadow overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
       <h2 class="font-bold text-gray-800" data-i18n="admin.stats.recent"></h2>
-      <a href="/admin/orders.html" class="text-yellow-600 text-sm hover:text-yellow-700"
+      <a href="/admin/orders.html" class="text-primary-600 text-sm hover:text-primary-700"
          data-i18n="admin.stats.viewAll"></a>
     </div>
     <div id="recent-orders" data-testid="recent-orders" class="overflow-x-auto">
@@ -97,7 +105,7 @@
           ${stats.recent_orders.map(o => `
             <tr class="border-t border-gray-100 hover:bg-gray-50">
               <td class="py-3 px-4">
-                <a href="/order-detail.html?id=${o.id}" class="text-yellow-600 font-semibold hover:underline">#${o.id}</a>
+                <a href="/order-detail.html?id=${o.id}" class="text-primary-600 font-semibold hover:underline">#${o.id}</a>
               </td>
               <td class="py-3">${o.username}</td>
               <td class="py-3">${formatDate(o.created_at)}</td>

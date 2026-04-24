@@ -1,0 +1,118 @@
+/* ─── Minimal theme (default) ─────────────────────────────────────────────── */
+/* Blue / White / Navy — Uniqlo-inspired clean aesthetic                       */
+:root {
+  /* Primary color scale (maps to blue-* in Tailwind) */
+  --p-50:  239 246 255;   /* #eff6ff */
+  --p-100: 219 234 254;   /* #dbeafe */
+  --p-300: 147 197 253;   /* #93c5fd */
+  --p-400: 59  130 246;   /* #3b82f6 */
+  --p-500: 37  99  235;   /* #2563eb */
+  --p-600: 29  78  216;   /* #1d4ed8 */
+  --p-700: 30  64  175;   /* #1e40af */
+
+  /* Text on primary (white on blue) */
+  --p-text: 255 255 255;
+
+  /* Navbar */
+  --nav-bg:      255 255 255;
+  --nav-text:    17  24  39;
+  --nav-border:  229 231 235;
+  --nav-hover:   37  99  235;   /* blue-600 */
+  --nav-logo:    29  78  216;   /* blue-700 */
+  --nav-active:  29  78  216;
+
+  /* Page background */
+  --page-bg:     248 250 252;   /* slate-50 */
+
+  /* Hero gradient */
+  --hero-from:   30  58  138;   /* blue-900 */
+  --hero-via:    30  64  175;   /* blue-800 */
+  --hero-to:     29  78  216;   /* blue-700 */
+}
+
+/* ─── Original theme ───────────────────────────────────────────────────────── */
+/* Yellow / Dark — the original ShoesHub look                                  */
+:root[data-theme="original"] {
+  --p-50:  254 252 232;   /* #fefce8 yellow-50  */
+  --p-100: 254 249 195;   /* #fef9c3 yellow-100 */
+  --p-300: 253 224 71;    /* #fde047 yellow-300 */
+  --p-400: 250 204 21;    /* #facc15 yellow-400 */
+  --p-500: 234 179 8;     /* #eab308 yellow-500 */
+  --p-600: 202 138 4;     /* #ca8a04 yellow-600 */
+  --p-700: 161 98  7;     /* #a16207 yellow-700 */
+
+  /* Text on primary (dark on yellow) */
+  --p-text: 17 24 39;
+
+  /* Navbar */
+  --nav-bg:      17  24  39;    /* gray-900 */
+  --nav-text:    255 255 255;
+  --nav-border:  17  24  39;
+  --nav-hover:   253 224 71;    /* yellow-300 */
+  --nav-logo:    250 204 21;    /* yellow-400 */
+  --nav-active:  250 204 21;
+
+  /* Page background */
+  --page-bg:     249 250 251;   /* gray-50 */
+
+  /* Hero gradient */
+  --hero-from:   17  24  39;    /* gray-900 */
+  --hero-via:    31  41  55;    /* gray-800 */
+  --hero-to:     55  65  81;    /* gray-700 */
+}
+
+/* ─── Navbar theming ───────────────────────────────────────────────────────── */
+[data-testid="navbar"] {
+  background-color: rgb(var(--nav-bg)) !important;
+  color: rgb(var(--nav-text)) !important;
+  border-bottom: 1px solid rgb(var(--nav-border));
+}
+
+[data-testid="navbar"] a,
+[data-testid="navbar"] button {
+  color: rgb(var(--nav-text));
+}
+
+[data-testid="navbar"] a:hover,
+[data-testid="navbar"] button:hover {
+  color: rgb(var(--nav-hover)) !important;
+}
+
+[data-testid="navbar"] [data-testid="nav-logo"] {
+  color: rgb(var(--nav-logo)) !important;
+}
+
+[data-testid="navbar"] .nav-active {
+  color: rgb(var(--nav-active));
+  font-weight: 600;
+}
+
+/* Register button in nav */
+[data-testid="nav-register"] {
+  background-color: rgb(var(--p-400)) !important;
+  color: rgb(var(--p-text)) !important;
+}
+[data-testid="nav-register"]:hover {
+  background-color: rgb(var(--p-500)) !important;
+  color: rgb(var(--p-text)) !important;
+}
+
+/* Mobile menu button */
+[data-testid="navbar"] #mobile-menu-btn svg {
+  stroke: rgb(var(--nav-text));
+}
+
+/* ─── Hero section ─────────────────────────────────────────────────────────── */
+[data-testid="hero-section"] {
+  background: linear-gradient(
+    135deg,
+    rgb(var(--hero-from)),
+    rgb(var(--hero-via)),
+    rgb(var(--hero-to))
+  ) !important;
+}
+
+/* ─── Body background ──────────────────────────────────────────────────────── */
+body {
+  background-color: rgb(var(--page-bg));
+}

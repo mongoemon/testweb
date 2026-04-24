@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
@@ -26,31 +34,31 @@
               <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.name"></label>
               <input id="shipping-name" data-testid="shipping-name" name="shipping_name" type="text"
                      required data-i18n-placeholder="checkout.shipping.name.ph"
-                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.address"></label>
               <input id="shipping-address" data-testid="shipping-address" name="shipping_address" type="text"
                      required data-i18n-placeholder="checkout.shipping.address.ph"
-                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.city"></label>
               <input id="shipping-city" data-testid="shipping-city" name="shipping_city" type="text"
                      required data-i18n-placeholder="checkout.shipping.city.ph"
-                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.postal"></label>
               <input id="shipping-postal" data-testid="shipping-postal" name="shipping_postal" type="text"
                      required data-i18n-placeholder="checkout.shipping.postal.ph"
-                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="checkout.shipping.phone"></label>
               <input id="shipping-phone" data-testid="shipping-phone" name="shipping_phone" type="tel"
                      required data-i18n-placeholder="checkout.shipping.phone.ph"
-                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                     class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
           </div>
         </div>
@@ -59,27 +67,27 @@
         <div class="bg-white rounded-2xl shadow p-6 mb-6">
           <h2 class="text-lg font-bold text-gray-800 mb-4" data-i18n="checkout.payment.title"></h2>
           <div class="space-y-3" data-testid="payment-methods">
-            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50">
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-primary-400 transition-colors has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50">
               <input type="radio" name="payment_method" value="credit_card" checked
-                     data-testid="payment-credit-card" class="text-yellow-500" />
+                     data-testid="payment-credit-card" class="text-primary-500" />
               <span class="text-2xl">💳</span>
               <div>
                 <div class="font-medium" data-i18n="checkout.payment.creditCard"></div>
                 <div class="text-xs text-gray-400" data-i18n="checkout.payment.creditCard.sub"></div>
               </div>
             </label>
-            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50">
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-primary-400 transition-colors has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50">
               <input type="radio" name="payment_method" value="bank_transfer"
-                     data-testid="payment-bank-transfer" class="text-yellow-500" />
+                     data-testid="payment-bank-transfer" class="text-primary-500" />
               <span class="text-2xl">🏦</span>
               <div>
                 <div class="font-medium" data-i18n="checkout.payment.bankTransfer"></div>
                 <div class="text-xs text-gray-400" data-i18n="checkout.payment.bankTransfer.sub"></div>
               </div>
             </label>
-            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50">
+            <label class="flex items-center gap-3 p-3 border border-gray-300 rounded-xl cursor-pointer hover:border-primary-400 transition-colors has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50">
               <input type="radio" name="payment_method" value="cod"
-                     data-testid="payment-cod" class="text-yellow-500" />
+                     data-testid="payment-cod" class="text-primary-500" />
               <span class="text-2xl">💵</span>
               <div>
                 <div class="font-medium" data-i18n="checkout.payment.cod"></div>
@@ -92,7 +100,7 @@
         <p id="form-error" data-testid="form-error" class="text-red-500 text-sm mb-3 hidden"></p>
 
         <button type="submit" id="submit-btn" data-testid="place-order-btn"
-                class="w-full bg-yellow-400 text-gray-900 py-4 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                class="w-full bg-primary-400 text-on-primary py-4 rounded-xl font-bold text-lg hover:bg-primary-300 transition-colors disabled:opacity-50"
                 data-i18n="checkout.submit"></button>
       </form>
     </div>
@@ -147,7 +155,7 @@
           </div>
           <div class="flex justify-between font-bold text-lg">
             <span>${i18n.t('checkout.summary.total')}</span>
-            <span data-testid="checkout-total" class="text-yellow-600">${formatPrice(cartData.total)}</span>
+            <span data-testid="checkout-total" class="text-primary-600">${formatPrice(cartData.total)}</span>
           </div>
         </div>`;
     } catch (e) {

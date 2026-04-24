@@ -4,16 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
 <main class="flex-1 flex items-center justify-center px-4 py-12">
   <div class="w-full max-w-md">
     <div class="text-center mb-8">
-      <a href="/" class="text-3xl font-extrabold text-yellow-500">👟 ShoesHub</a>
+      <a href="/" class="text-3xl font-extrabold text-primary-500">👟 ShoesHub</a>
       <h1 class="text-2xl font-bold text-gray-800 mt-4" data-i18n="auth.login.title"></h1>
       <p class="text-gray-500 mt-1" data-i18n="auth.login.subtitle"></p>
     </div>
@@ -25,7 +33,7 @@
           <label for="username" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.login.username"></label>
           <input id="username" data-testid="username-input" name="username" type="text"
                  required autocomplete="username" data-i18n-placeholder="auth.login.username.ph"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow" />
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-shadow" />
         </div>
 
         <div class="mb-6">
@@ -33,7 +41,7 @@
           <div class="relative">
             <input id="password" data-testid="password-input" name="password" type="password"
                    required autocomplete="current-password" data-i18n-placeholder="auth.login.password.ph"
-                   class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow pr-12" />
+                   class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400 transition-shadow pr-12" />
             <button type="button" onclick="togglePassword()" data-testid="toggle-password"
                     class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">👁</button>
           </div>
@@ -42,13 +50,13 @@
         <p id="login-error" data-testid="login-error" class="text-red-500 text-sm mb-4 hidden" role="alert"></p>
 
         <button type="submit" id="login-btn" data-testid="login-btn"
-                class="w-full bg-yellow-400 text-gray-900 py-3 rounded-xl font-bold text-base hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                class="w-full bg-primary-400 text-on-primary py-3 rounded-xl font-bold text-base hover:bg-primary-300 transition-colors disabled:opacity-50"
                 data-i18n="auth.login.submit"></button>
       </form>
 
       <p class="text-center text-sm text-gray-500 mt-6">
         <span data-i18n="auth.login.noAccount"></span>
-        <a href="/register.html" data-testid="register-link" class="text-yellow-600 font-semibold hover:text-yellow-700"
+        <a href="/register.html" data-testid="register-link" class="text-primary-600 font-semibold hover:text-primary-700"
            data-i18n="auth.login.registerLink"></a>
       </p>
     </div>

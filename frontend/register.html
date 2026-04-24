@@ -4,16 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
 <main class="flex-1 flex items-center justify-center px-4 py-12">
   <div class="w-full max-w-md">
     <div class="text-center mb-8">
-      <a href="/" class="text-3xl font-extrabold text-yellow-500">👟 ShoesHub</a>
+      <a href="/" class="text-3xl font-extrabold text-primary-500">👟 ShoesHub</a>
       <h1 class="text-2xl font-bold text-gray-800 mt-4" data-i18n="auth.register.title"></h1>
       <p class="text-gray-500 mt-1" data-i18n="auth.register.subtitle"></p>
     </div>
@@ -25,48 +33,48 @@
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.fullName"></label>
           <input id="full-name" data-testid="full-name-input" name="full_name" type="text"
                  data-i18n-placeholder="auth.register.fullName.ph"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
 
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.username"></label>
           <input id="username" data-testid="username-input" name="username" type="text"
                  required autocomplete="username" data-i18n-placeholder="auth.register.username.ph"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
 
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.email"></label>
           <input id="email" data-testid="email-input" name="email" type="email"
                  required autocomplete="email" data-i18n-placeholder="auth.register.email.ph"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
 
         <div class="mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.password"></label>
           <input id="password" data-testid="password-input" name="password" type="password"
                  required autocomplete="new-password" data-i18n-placeholder="auth.register.password.ph"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
 
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="auth.register.confirmPw"></label>
           <input id="confirm-password" data-testid="confirm-password-input" name="confirm_password" type="password"
                  required autocomplete="new-password" data-i18n-placeholder="auth.register.confirmPw.ph"
-                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
 
         <p id="register-error" data-testid="register-error" class="text-red-500 text-sm mb-4 hidden" role="alert"></p>
         <p id="register-success" data-testid="register-success" class="text-green-600 text-sm mb-4 hidden" role="status"></p>
 
         <button type="submit" id="register-btn" data-testid="register-btn"
-                class="w-full bg-yellow-400 text-gray-900 py-3 rounded-xl font-bold text-base hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                class="w-full bg-primary-400 text-on-primary py-3 rounded-xl font-bold text-base hover:bg-primary-300 transition-colors disabled:opacity-50"
                 data-i18n="auth.register.submit"></button>
       </form>
 
       <p class="text-center text-sm text-gray-500 mt-6">
         <span data-i18n="auth.register.hasAccount"></span>
-        <a href="/login.html" data-testid="login-link" class="text-yellow-600 font-semibold hover:text-yellow-700"
+        <a href="/login.html" data-testid="login-link" class="text-primary-600 font-semibold hover:text-primary-700"
            data-i18n="auth.register.loginLink"></a>
       </p>
     </div>

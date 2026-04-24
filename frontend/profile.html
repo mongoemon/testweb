@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub — Profile</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -21,17 +29,17 @@
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.personal.fullName"></label>
         <input id="p-fullname" data-testid="profile-fullname" type="text"
                data-i18n-placeholder="profile.personal.fullName.ph"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.personal.email"></label>
         <input id="p-email" data-testid="profile-email" type="email" required
                data-i18n-placeholder="profile.personal.email.ph"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
       </div>
       <p id="err-personal" data-testid="profile-personal-error" class="text-red-500 text-sm hidden"></p>
       <button type="submit" id="btn-personal" data-testid="profile-personal-save"
-              class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+              class="bg-primary-400 text-on-primary px-5 py-2 rounded-lg font-semibold hover:bg-primary-300 transition-colors disabled:opacity-50"
               data-i18n="profile.personal.save"></button>
     </form>
   </div>
@@ -44,23 +52,23 @@
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.password.current"></label>
         <input id="p-cur-pw" data-testid="profile-current-password" type="password" required
                data-i18n-placeholder="profile.password.current.ph"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.password.new"></label>
         <input id="p-new-pw" data-testid="profile-new-password" type="password" required
                data-i18n-placeholder="profile.password.new.ph"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.password.confirm"></label>
         <input id="p-conf-pw" data-testid="profile-confirm-password" type="password" required
                data-i18n-placeholder="profile.password.confirm.ph"
-               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
       </div>
       <p id="err-password" data-testid="profile-password-error" class="text-red-500 text-sm hidden"></p>
       <button type="submit" id="btn-password" data-testid="profile-password-save"
-              class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+              class="bg-primary-400 text-on-primary px-5 py-2 rounded-lg font-semibold hover:bg-primary-300 transition-colors disabled:opacity-50"
               data-i18n="profile.password.save"></button>
     </form>
   </div>
@@ -74,31 +82,31 @@
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.name"></label>
           <input id="a-name" data-testid="profile-shipping-name" type="text"
                  data-i18n-placeholder="profile.address.name.ph"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.address"></label>
           <input id="a-address" data-testid="profile-shipping-address" type="text"
                  data-i18n-placeholder="profile.address.address.ph"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.city"></label>
           <input id="a-city" data-testid="profile-shipping-city" type="text"
                  data-i18n-placeholder="profile.address.city.ph"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.postal"></label>
           <input id="a-postal" data-testid="profile-shipping-postal" type="text"
                  data-i18n-placeholder="profile.address.postal.ph"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="profile.address.phone"></label>
           <input id="a-phone" data-testid="profile-shipping-phone" type="tel"
                  data-i18n-placeholder="profile.address.phone.ph"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
       </div>
 
@@ -107,24 +115,24 @@
         <h3 class="text-sm font-semibold text-gray-700 mb-3" data-i18n="profile.payment.title"></h3>
         <div class="grid sm:grid-cols-3 gap-3">
           <label data-testid="payment-credit-card"
-                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50 transition-colors">
-            <input type="radio" name="payment" value="credit_card" id="pm-cc" class="mt-0.5 accent-yellow-400" />
+                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50 transition-colors">
+            <input type="radio" name="payment" value="credit_card" id="pm-cc" class="mt-0.5 accent-primary-400" />
             <div>
               <p class="font-semibold text-sm text-gray-800" data-i18n="profile.payment.creditCard"></p>
               <p class="text-xs text-gray-400">Visa, Mastercard, JCB</p>
             </div>
           </label>
           <label data-testid="payment-bank-transfer"
-                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50 transition-colors">
-            <input type="radio" name="payment" value="bank_transfer" id="pm-bt" class="mt-0.5 accent-yellow-400" />
+                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50 transition-colors">
+            <input type="radio" name="payment" value="bank_transfer" id="pm-bt" class="mt-0.5 accent-primary-400" />
             <div>
               <p class="font-semibold text-sm text-gray-800" data-i18n="profile.payment.bankTransfer"></p>
               <p class="text-xs text-gray-400">SCB, KBank, BBL</p>
             </div>
           </label>
           <label data-testid="payment-cod"
-                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-yellow-400 has-[:checked]:bg-yellow-50 transition-colors">
-            <input type="radio" name="payment" value="cod" id="pm-cod" class="mt-0.5 accent-yellow-400" />
+                 class="flex items-start gap-3 border-2 border-gray-200 rounded-xl p-3 cursor-pointer has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50 transition-colors">
+            <input type="radio" name="payment" value="cod" id="pm-cod" class="mt-0.5 accent-primary-400" />
             <div>
               <p class="font-semibold text-sm text-gray-800" data-i18n="profile.payment.cod"></p>
               <p class="text-xs text-gray-400" data-i18n="checkout.payment.cod.sub"></p>
@@ -135,7 +143,7 @@
 
       <p id="err-address" data-testid="profile-address-error" class="text-red-500 text-sm hidden"></p>
       <button type="submit" id="btn-address" data-testid="profile-address-save"
-              class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+              class="bg-primary-400 text-on-primary px-5 py-2 rounded-lg font-semibold hover:bg-primary-300 transition-colors disabled:opacity-50"
               data-i18n="profile.address.save"></button>
     </form>
   </div>

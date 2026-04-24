@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
@@ -37,7 +45,7 @@
             <div class="text-6xl mb-4">🛒</div>
             <p class="text-gray-500 text-lg mb-4">${i18n.t('cart.empty')}</p>
             <a href="/products.html" data-testid="continue-shopping-link"
-               class="inline-block bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition-colors">
+               class="inline-block bg-primary-400 text-on-primary px-8 py-3 rounded-full font-semibold hover:bg-primary-300 transition-colors">
               ${i18n.t('cart.shopNow')}
             </a>
           </div>`;
@@ -53,14 +61,14 @@
               <div>
                 <a href="/product.html?id=${item.product_id}"
                    data-testid="cart-item-name"
-                   class="font-semibold text-gray-800 hover:text-yellow-600">${item.name}</a>
+                   class="font-semibold text-gray-800 hover:text-primary-600">${item.name}</a>
                 <p class="text-sm text-gray-400">${item.brand || ''}</p>
                 ${item.size ? `<p class="text-sm text-gray-500">${i18n.t('cart.size')} <span data-testid="cart-item-size">${item.size}</span></p>` : ''}
               </div>
             </div>
           </td>
           <td class="py-4 text-center">
-            <span data-testid="cart-item-price" class="text-yellow-600 font-semibold">${formatPrice(item.price)}</span>
+            <span data-testid="cart-item-price" class="text-primary-600 font-semibold">${formatPrice(item.price)}</span>
           </td>
           <td class="py-4 text-center">
             <div class="flex items-center justify-center gap-2">
@@ -110,10 +118,10 @@
             </div>
             <div class="flex justify-between font-bold text-xl border-t pt-3 mt-3">
               <span>${i18n.t('cart.total')}</span>
-              <span data-testid="cart-total" class="text-yellow-600">${formatPrice(cart.total)}</span>
+              <span data-testid="cart-total" class="text-primary-600">${formatPrice(cart.total)}</span>
             </div>
             <a href="/checkout.html" data-testid="checkout-btn"
-               class="mt-4 w-full block text-center bg-yellow-400 text-gray-900 py-3 rounded-xl font-bold hover:bg-yellow-300 transition-colors">
+               class="mt-4 w-full block text-center bg-primary-400 text-on-primary py-3 rounded-xl font-bold hover:bg-primary-300 transition-colors">
               ${i18n.t('cart.checkout')}
             </a>
             <a href="/products.html" data-testid="continue-shopping-link"

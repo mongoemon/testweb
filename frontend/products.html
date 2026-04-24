@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
@@ -18,15 +26,15 @@
     <div class="flex flex-wrap gap-3">
       <input id="search-input" data-testid="search-input" type="text"
              data-i18n-placeholder="products.search.placeholder"
-             class="flex-1 min-w-48 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+             class="flex-1 min-w-48 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
 
       <select id="filter-category" data-testid="filter-category"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400">
         <option value="" data-i18n="products.allCategories"></option>
       </select>
 
       <select id="filter-brand" data-testid="filter-brand"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400">
         <option value="" data-i18n="products.allBrands"></option>
         <option>Nike</option><option>Adidas</option><option>New Balance</option>
         <option>Converse</option><option>Vans</option><option>Puma</option>
@@ -34,7 +42,7 @@
       </select>
 
       <select id="filter-size" data-testid="filter-size"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400">
         <option value="" data-i18n="products.allSizes"></option>
         <option>36</option><option>37</option><option>38</option><option>39</option>
         <option>40</option><option>41</option><option>42</option><option>43</option>
@@ -42,7 +50,7 @@
       </select>
 
       <select id="filter-sort" data-testid="filter-sort"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400">
         <option value="newest" data-i18n="products.sort.newest"></option>
         <option value="price_asc" data-i18n="products.sort.priceAsc"></option>
         <option value="price_desc" data-i18n="products.sort.priceDesc"></option>
@@ -50,7 +58,7 @@
       </select>
 
       <button id="search-btn" data-testid="search-btn"
-              class="bg-yellow-400 text-gray-900 px-6 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors"
+              class="bg-primary-400 text-on-primary px-6 py-2 rounded-lg font-semibold hover:bg-primary-300 transition-colors"
               data-i18n="btn.search"></button>
       <button id="clear-btn" data-testid="clear-filters-btn"
               class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -122,7 +130,7 @@
           <p data-testid="product-brand" class="text-xs text-gray-400 uppercase">${p.brand || ''}</p>
           <h3 data-testid="product-name" class="font-semibold text-gray-800 mt-0.5">${p.name}</h3>
           <p class="text-xs text-gray-400">${p.category_name || ''}</p>
-          <p data-testid="product-price" class="mt-2 text-yellow-600 font-bold text-lg">${formatPrice(p.price)}</p>
+          <p data-testid="product-price" class="mt-2 text-primary-600 font-bold text-lg">${formatPrice(p.price)}</p>
           <div class="mt-1">${stockBadge(p)}</div>
         </div>
       </a>`;
@@ -133,7 +141,7 @@
     const btns = [];
     for (let i = 1; i <= pages; i++) {
       btns.push(`<button onclick="goPage(${i})" data-testid="page-btn" data-page="${i}"
-        class="px-4 py-2 rounded-lg text-sm font-medium ${i === page ? 'bg-yellow-400 text-gray-900' : 'bg-white border border-gray-300 hover:bg-gray-50'}">${i}</button>`);
+        class="px-4 py-2 rounded-lg text-sm font-medium ${i === page ? 'bg-primary-400 text-on-primary' : 'bg-white border border-gray-300 hover:bg-gray-50'}">${i}</button>`);
     }
     document.getElementById('pagination').innerHTML = btns.join('');
   }

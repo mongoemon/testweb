@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
@@ -21,7 +29,7 @@
 
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-800" data-i18n="order.title"></h1>
-    <a href="/orders.html" class="text-yellow-600 hover:text-yellow-700 text-sm font-medium"
+    <a href="/orders.html" class="text-primary-600 hover:text-primary-700 text-sm font-medium"
        data-i18n="order.back"></a>
   </div>
 
@@ -89,7 +97,7 @@
           </div>
           <div class="mt-4 pt-4 border-t flex justify-between font-bold text-lg">
             <span>${i18n.t('order.total')}</span>
-            <span data-testid="order-total" class="text-yellow-600">${formatPrice(order.total_amount)}</span>
+            <span data-testid="order-total" class="text-primary-600">${formatPrice(order.total_amount)}</span>
           </div>
         </div>
 
@@ -112,7 +120,7 @@
 
         <div class="text-center">
           <a href="/products.html"
-             class="inline-block bg-yellow-400 text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-yellow-300 transition-colors">
+             class="inline-block bg-primary-400 text-on-primary px-8 py-3 rounded-full font-semibold hover:bg-primary-300 transition-colors">
             ${i18n.t('order.continueShopping')}
           </a>
         </div>

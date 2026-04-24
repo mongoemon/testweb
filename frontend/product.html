@@ -4,9 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
 <div id="nav-placeholder"></div>
 
@@ -46,7 +54,7 @@
            <div class="flex flex-wrap gap-2" data-testid="size-selector">
              ${p.sizes.map(s => `
                <button onclick="selectSize('${s}', this)" data-testid="size-option" data-size="${s}"
-                       class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:border-yellow-400 hover:bg-yellow-50 transition-colors">
+                       class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:border-primary-400 hover:bg-primary-50 transition-colors">
                  ${s}
                </button>`).join('')}
            </div>
@@ -80,7 +88,7 @@
             <h1 data-testid="product-name" class="text-3xl font-bold text-gray-900 mt-1">${p.name}</h1>
             <p data-testid="product-category" class="text-sm text-gray-400 mt-1">${p.category_name || ''}</p>
 
-            <p data-testid="product-price" class="text-4xl font-extrabold text-yellow-500 mt-4">${formatPrice(p.price)}</p>
+            <p data-testid="product-price" class="text-4xl font-extrabold text-primary-500 mt-4">${formatPrice(p.price)}</p>
 
             <div data-testid="product-stock" class="mt-2 text-sm">${stockBadge}</div>
 
@@ -104,8 +112,8 @@
             <!-- Add to Cart -->
             <button id="add-to-cart-btn" data-testid="add-to-cart-btn" onclick="addToCart()"
                     ${p.stock === 0 ? 'disabled' : ''}
-                    class="mt-6 w-full bg-yellow-400 text-gray-900 py-4 rounded-xl font-bold text-lg
-                           hover:bg-yellow-300 active:bg-yellow-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="mt-6 w-full bg-primary-400 text-on-primary py-4 rounded-xl font-bold text-lg
+                           hover:bg-primary-300 active:bg-primary-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               ${p.stock === 0 ? i18n.t('product.outOfStock') : i18n.t('product.addToCart')}
             </button>
 
@@ -117,10 +125,10 @@
 
   function selectSize(size, btn) {
     document.querySelectorAll('[data-testid="size-option"]').forEach(b => {
-      b.classList.remove('bg-yellow-400', 'text-gray-900', 'border-yellow-400', 'font-semibold');
+      b.classList.remove('bg-primary-400', 'text-gray-900', 'border-primary-400', 'font-semibold');
       b.classList.add('border-gray-300');
     });
-    btn.classList.add('bg-yellow-400', 'text-gray-900', 'border-yellow-400', 'font-semibold');
+    btn.classList.add('bg-primary-400', 'text-gray-900', 'border-primary-400', 'font-semibold');
     btn.classList.remove('border-gray-300');
     selectedSize = size;
     document.getElementById('size-error')?.classList.add('hidden');

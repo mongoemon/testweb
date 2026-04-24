@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShoesHub Admin</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
@@ -14,14 +22,14 @@
   <!-- Admin nav -->
   <div class="flex gap-3 mb-6 text-sm font-medium">
     <a href="/admin/index.html"    data-testid="admin-nav-dashboard" class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.dashboard"></a>
-    <a href="/admin/products.html" data-testid="admin-nav-products"  class="bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg" data-i18n="admin.manageProducts"></a>
+    <a href="/admin/products.html" data-testid="admin-nav-products"  class="bg-primary-400 text-on-primary px-4 py-2 rounded-lg" data-i18n="admin.manageProducts"></a>
     <a href="/admin/orders.html"   data-testid="admin-nav-orders"    class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.manageOrders"></a>
   </div>
 
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-800" data-i18n="admin.manageProducts"></h1>
     <button onclick="openModal()" data-testid="add-product-btn"
-            class="bg-yellow-400 text-gray-900 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-300 transition-colors"
+            class="bg-primary-400 text-on-primary px-5 py-2 rounded-lg font-semibold hover:bg-primary-300 transition-colors"
             data-i18n="admin.addProduct"></button>
   </div>
 
@@ -61,49 +69,49 @@
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.name"></label>
           <input id="f-name" data-testid="product-form-name" type="text" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.brand"></label>
           <input id="f-brand" data-testid="product-form-brand" type="text"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.category"></label>
           <select id="f-category" data-testid="product-form-category"
-                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400">
             <option value="" data-i18n="admin.product.selCat"></option>
           </select>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.price"></label>
           <input id="f-price" data-testid="product-form-price" type="number" min="0" step="0.01" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.stock"></label>
           <input id="f-stock" data-testid="product-form-stock" type="number" min="0" value="0"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.imageUrl"></label>
           <input id="f-image" data-testid="product-form-image" type="url"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.sizes"></label>
           <input id="f-sizes" data-testid="product-form-sizes" type="text"
                  data-i18n-placeholder="admin.product.sizes.ph"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400" />
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.product.desc"></label>
           <textarea id="f-desc" data-testid="product-form-description" rows="3"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400"></textarea>
         </div>
         <div class="flex items-center gap-2">
           <input id="f-active" data-testid="product-form-active" type="checkbox" checked
-                 class="w-4 h-4 text-yellow-400" />
+                 class="w-4 h-4 text-primary-400" />
           <label for="f-active" class="text-sm font-medium text-gray-700" data-i18n="admin.product.active"></label>
         </div>
       </div>
@@ -112,7 +120,7 @@
 
       <div class="flex gap-3 pt-2">
         <button type="submit" id="save-btn" data-testid="product-save-btn"
-                class="flex-1 bg-yellow-400 text-gray-900 py-2.5 rounded-lg font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-50"
+                class="flex-1 bg-primary-400 text-on-primary py-2.5 rounded-lg font-semibold hover:bg-primary-300 transition-colors disabled:opacity-50"
                 data-i18n="btn.save"></button>
         <button type="button" onclick="closeModal()" data-testid="product-cancel-btn"
                 class="flex-1 border border-gray-300 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
@@ -150,7 +158,7 @@
           <td class="py-3 px-4 font-medium text-gray-800">${p.name}</td>
           <td class="py-3">${p.brand || '-'}</td>
           <td class="py-3">${p.category_name || '-'}</td>
-          <td class="py-3 text-right font-semibold text-yellow-600">${formatPrice(p.price)}</td>
+          <td class="py-3 text-right font-semibold text-primary-600">${formatPrice(p.price)}</td>
           <td class="py-3 text-center">${p.stock}</td>
           <td class="py-3 text-center text-gray-500">${p.sold_count ?? 0}</td>
           <td class="py-3 text-center">
