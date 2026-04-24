@@ -35,12 +35,13 @@
           <th class="py-3 text-left" data-i18n="admin.col.category"></th>
           <th class="py-3 text-right" data-i18n="admin.col.price"></th>
           <th class="py-3 text-center" data-i18n="admin.col.stock"></th>
+          <th class="py-3 text-center" data-i18n="admin.col.sold"></th>
           <th class="py-3 text-center" data-i18n="admin.col.status"></th>
           <th class="py-3 text-center" data-i18n="admin.col.manage"></th>
         </tr>
       </thead>
       <tbody id="product-table" data-testid="product-table">
-        <tr><td colspan="8" class="text-center py-10 text-gray-400" data-i18n="loading"></td></tr>
+        <tr><td colspan="9" class="text-center py-10 text-gray-400" data-i18n="loading"></td></tr>
       </tbody>
     </table>
   </div>
@@ -151,6 +152,7 @@
           <td class="py-3">${p.category_name || '-'}</td>
           <td class="py-3 text-right font-semibold text-yellow-600">${formatPrice(p.price)}</td>
           <td class="py-3 text-center">${p.stock}</td>
+          <td class="py-3 text-center text-gray-500">${p.sold_count ?? 0}</td>
           <td class="py-3 text-center">
             <span class="px-2 py-1 rounded-full text-xs font-semibold ${p.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}">
               ${p.is_active ? i18n.t('admin.product.active.yes') : i18n.t('admin.product.active.no')}

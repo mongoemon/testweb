@@ -29,13 +29,14 @@ _RESPONSES_404 = {404: {"description": "Product not found"}}
 _RESPONSES_403 = {403: {"description": "Admin access required"}}
 
 
-def row_to_product(row) -> dict:
+def row_to_product(row, sold_count: int = 0) -> dict:
     p = dict(row)
     try:
         p["sizes"] = json.loads(p.get("sizes") or "[]")
     except Exception:
         p["sizes"] = []
     p["is_active"] = bool(p.get("is_active", 1))
+    p["sold_count"] = sold_count
     return p
 
 
@@ -146,16 +147,18 @@ def list_products(
     total = db.execute(f"SELECT COUNT(*) FROM products p WHERE {where}", params).fetchone()[0]
     offset = (page - 1) * limit
     rows = db.execute(
-        f"""SELECT p.*, c.name AS category_name, c.slug AS category_slug
+        f"""SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                   COALESCE(SUM(oi.quantity), 0) AS sold_count
             FROM products p
             LEFT JOIN categories c ON c.id = p.category_id
-            WHERE {where} ORDER BY {order} LIMIT ? OFFSET ?""",
+            LEFT JOIN order_items oi ON oi.product_id = p.id
+            WHERE {where} GROUP BY p.id ORDER BY {order} LIMIT ? OFFSET ?""",
         params + [limit, offset],
     ).fetchall()
     db.close()
 
     return {
-        "items": [row_to_product(r) for r in rows],
+        "items": [row_to_product(r, r["sold_count"]) for r in rows],
         "total": total,
         "page": page,
         "limit": limit,
@@ -176,15 +179,19 @@ def list_products(
 def get_product(product_id: int):
     db = get_db()
     row = db.execute(
-        """SELECT p.*, c.name AS category_name, c.slug AS category_slug
-           FROM products p LEFT JOIN categories c ON c.id = p.category_id
-           WHERE p.id = ? AND p.is_active = 1""",
+        """SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                  COALESCE(SUM(oi.quantity), 0) AS sold_count
+           FROM products p
+           LEFT JOIN categories c ON c.id = p.category_id
+           LEFT JOIN order_items oi ON oi.product_id = p.id
+           WHERE p.id = ? AND p.is_active = 1
+           GROUP BY p.id""",
         (product_id,),
     ).fetchone()
     db.close()
     if not row:
         raise HTTPException(404, "Product not found")
-    return row_to_product(row)
+    return row_to_product(row, row["sold_count"])
 
 
 # ── Products (admin CRUD) ─────────────────────────────────────────────────────

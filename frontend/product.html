@@ -54,11 +54,15 @@
          </div>`
       : '';
 
+    const isAdmin = auth.isAdmin();
     const stockBadge = p.stock === 0
       ? `<span class="text-red-500 font-medium">${i18n.t('product.outOfStock')}</span>`
-      : p.stock <= 5
-        ? `<span class="text-orange-500 font-medium">${i18n.t('product.lowStock', p.stock)}</span>`
-        : `<span class="text-green-600 font-medium">${i18n.t('product.inStock', p.stock)}</span>`;
+      : isAdmin
+        ? `<span class="text-green-600 font-medium">${i18n.t('product.inStock', p.stock)}</span>
+           <span class="ml-3 text-gray-400 text-xs">${i18n.t('product.soldCount', p.sold_count)}</span>`
+        : p.stock <= 5
+          ? `<span class="text-orange-500 font-medium">${i18n.t('product.lowStock', p.stock)}</span>`
+          : `<span class="text-green-600 font-medium">${i18n.t('product.available')}</span>`;
 
     document.getElementById('product-detail').innerHTML = `
       <div class="bg-white rounded-2xl shadow overflow-hidden">
