@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 import config
 from database import init_db, migrate_db
 from routes import admin, auth, cart, orders, products
+from routes import discounts
 from seed import seed
 
 TAGS_METADATA = [
@@ -38,6 +39,14 @@ TAGS_METADATA = [
         "description": (
             "Admin-only endpoints: dashboard stats, all orders, user list. "
             "Require an **Admin** token (username: `admin`, password: `admin1234`)."
+        ),
+    },
+    {
+        "name": "discounts",
+        "description": (
+            "Discount code management. "
+            "`POST /api/discount-codes/validate` requires a **User** token. "
+            "Admin CRUD endpoints require an **Admin** token."
         ),
     },
 ]
@@ -104,6 +113,8 @@ app.include_router(products.router)
 app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(admin.router)
+for _r in discounts.router:
+    app.include_router(_r)
 
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static")

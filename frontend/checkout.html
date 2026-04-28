@@ -97,6 +97,20 @@
           </div>
         </div>
 
+        <!-- Discount Code -->
+        <div class="bg-white rounded-2xl shadow p-6 mb-6">
+          <h2 class="text-lg font-bold text-gray-800 mb-4" data-i18n="checkout.discount.title"></h2>
+          <div class="flex gap-2">
+            <input id="discount-input" data-testid="discount-code-input" type="text"
+                   data-i18n-placeholder="checkout.discount.placeholder"
+                   class="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-400 uppercase" />
+            <button id="discount-btn" data-testid="apply-discount-btn" type="button" onclick="applyDiscount()"
+                    class="bg-primary-400 text-on-primary px-5 py-2.5 rounded-lg font-semibold hover:bg-primary-300 transition-colors"
+                    data-i18n="checkout.discount.apply"></button>
+          </div>
+          <p id="discount-msg" data-testid="discount-message" class="text-sm mt-2 hidden"></p>
+        </div>
+
         <p id="form-error" data-testid="form-error" class="text-red-500 text-sm mb-3 hidden"></p>
 
         <button type="submit" id="submit-btn" data-testid="place-order-btn"
@@ -127,6 +141,50 @@
 <script src="/js/nav.js"></script>
 <script>
   let cartData = null;
+  let appliedDiscount = null;
+
+  function calcDiscountAmount(subtotal) {
+    if (!appliedDiscount) return 0;
+    if (appliedDiscount.discount_type === 'percentage') {
+      return Math.min(subtotal * appliedDiscount.discount_value / 100, subtotal);
+    }
+    return Math.min(appliedDiscount.discount_value, subtotal);
+  }
+
+  function renderSummary() {
+    if (!cartData) return;
+    const subtotal = cartData.total;
+    const discountAmt = calcDiscountAmount(subtotal);
+    const total = Math.max(0, subtotal - discountAmt);
+    const summary = document.getElementById('order-summary');
+    summary.innerHTML = `
+      <div class="space-y-3">
+        ${cartData.items.map(i => `
+          <div class="flex justify-between text-sm">
+            <div>
+              <span class="font-medium">${i.name}</span>
+              ${i.size ? `<span class="text-gray-400"> (${i.size})</span>` : ''}
+              <span class="text-gray-400"> ×${i.quantity}</span>
+            </div>
+            <span>${formatPrice(i.subtotal)}</span>
+          </div>`).join('')}
+      </div>
+      <div class="border-t mt-4 pt-4 space-y-1">
+        <div class="flex justify-between text-sm text-gray-500">
+          <span>${i18n.t('checkout.summary.shipping')}</span>
+          <span class="text-green-600">${i18n.t('checkout.summary.free')}</span>
+        </div>
+        ${discountAmt > 0 ? `
+        <div class="flex justify-between text-sm text-green-600" data-testid="discount-line">
+          <span>${i18n.t('checkout.summary.discount')} (${appliedDiscount.code})</span>
+          <span>-${formatPrice(discountAmt)}</span>
+        </div>` : ''}
+        <div class="flex justify-between font-bold text-lg pt-1 border-t">
+          <span>${i18n.t('checkout.summary.total')}</span>
+          <span data-testid="checkout-total" class="text-primary-600">${formatPrice(total)}</span>
+        </div>
+      </div>`;
+  }
 
   async function loadOrderSummary() {
     const summary = document.getElementById('order-summary');
@@ -136,31 +194,57 @@
         window.location.href = '/cart.html';
         return;
       }
-      summary.innerHTML = `
-        <div class="space-y-3">
-          ${cartData.items.map(i => `
-            <div class="flex justify-between text-sm">
-              <div>
-                <span class="font-medium">${i.name}</span>
-                ${i.size ? `<span class="text-gray-400"> (${i.size})</span>` : ''}
-                <span class="text-gray-400"> ×${i.quantity}</span>
-              </div>
-              <span>${formatPrice(i.subtotal)}</span>
-            </div>`).join('')}
-        </div>
-        <div class="border-t mt-4 pt-4">
-          <div class="flex justify-between text-sm text-gray-500 mb-1">
-            <span>${i18n.t('checkout.summary.shipping')}</span>
-            <span class="text-green-600">${i18n.t('checkout.summary.free')}</span>
-          </div>
-          <div class="flex justify-between font-bold text-lg">
-            <span>${i18n.t('checkout.summary.total')}</span>
-            <span data-testid="checkout-total" class="text-primary-600">${formatPrice(cartData.total)}</span>
-          </div>
-        </div>`;
+      renderSummary();
     } catch (e) {
       summary.innerHTML = `<p class="text-red-400 text-sm">${e.detail || i18n.t('error.generic')}</p>`;
     }
+  }
+
+  async function applyDiscount() {
+    const code = document.getElementById('discount-input').value.trim().toUpperCase();
+    const msg  = document.getElementById('discount-msg');
+    const btn  = document.getElementById('discount-btn');
+    if (!code) return;
+
+    btn.disabled = true;
+    btn.textContent = i18n.t('checkout.discount.applying');
+    msg.className = 'text-sm mt-2';
+    msg.classList.remove('hidden');
+    msg.textContent = i18n.t('checkout.discount.applying');
+
+    try {
+      const dc = await api.validateDiscount(code);
+      appliedDiscount = dc;
+      const subtotal = cartData ? cartData.total : 0;
+      const amt = calcDiscountAmount(subtotal);
+      msg.textContent = i18n.t('checkout.discount.applied', formatPrice(amt));
+      msg.className = 'text-sm mt-2 text-green-600';
+      document.getElementById('discount-input').disabled = true;
+      btn.textContent = i18n.t('checkout.discount.remove');
+      btn.onclick = removeDiscount;
+      btn.disabled = false;
+      renderSummary();
+    } catch (ex) {
+      appliedDiscount = null;
+      msg.textContent = ex.detail || i18n.t('checkout.discount.invalid');
+      msg.className = 'text-sm mt-2 text-red-500';
+      btn.textContent = i18n.t('checkout.discount.apply');
+      btn.onclick = applyDiscount;
+      btn.disabled = false;
+    }
+  }
+
+  function removeDiscount() {
+    appliedDiscount = null;
+    const input = document.getElementById('discount-input');
+    const msg   = document.getElementById('discount-msg');
+    const btn   = document.getElementById('discount-btn');
+    input.value    = '';
+    input.disabled = false;
+    msg.classList.add('hidden');
+    btn.textContent = i18n.t('checkout.discount.apply');
+    btn.onclick = applyDiscount;
+    renderSummary();
   }
 
   async function placeOrder(e) {
@@ -191,6 +275,7 @@
       shipping_phone:   document.getElementById('shipping-phone').value.trim(),
       payment_method:   form.querySelector('input[name="payment_method"]:checked').value,
     };
+    if (appliedDiscount) payload.discount_code = appliedDiscount.code;
 
     try {
       const order = await api.placeOrder(payload);

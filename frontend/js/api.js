@@ -65,4 +65,11 @@ const api = {
   getAdminOrders:      (status) => api.get(`/admin/orders${status ? '?status=' + status : ''}`),
   updateOrderStatus:   (id, s)  => api.put(`/admin/orders/${id}/status`, { status: s }),
   getAdminUsers:       ()       => api.get('/admin/users'),
+
+  // Discount codes
+  validateDiscount:         (code)     => api.post('/discount-codes/validate', { code }),
+  getAdminDiscountCodes:    ()         => api.get('/admin/discount-codes'),
+  createAdminDiscountCode:  (d)        => api.post('/admin/discount-codes', d),
+  updateAdminDiscountCode:  (id, d)    => api.put(`/admin/discount-codes/${id}`, d),
+  deleteAdminDiscountCode:  (id)       => api.delete(`/admin/discount-codes/${id}`),
 };

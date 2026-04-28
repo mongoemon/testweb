@@ -78,6 +78,19 @@ def init_db():
             price        REAL NOT NULL,
             size         TEXT
         );
+
+        CREATE TABLE IF NOT EXISTS discount_codes (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            code          TEXT UNIQUE NOT NULL,
+            description   TEXT,
+            discount_type TEXT NOT NULL DEFAULT 'percentage',
+            discount_value REAL NOT NULL,
+            expires_at    TIMESTAMP,
+            max_uses      INTEGER,
+            current_uses  INTEGER NOT NULL DEFAULT 0,
+            is_active     INTEGER NOT NULL DEFAULT 1,
+            created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
     """)
     conn.commit()
     conn.close()
@@ -85,17 +98,26 @@ def init_db():
 
 def migrate_db():
     conn = get_db()
-    cols = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
-    new_cols = [
+
+    users_cols = {row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()}
+    for col, typedef in [
         ("default_shipping_name",    "TEXT"),
         ("default_shipping_address", "TEXT"),
         ("default_shipping_city",    "TEXT"),
         ("default_shipping_postal",  "TEXT"),
         ("default_shipping_phone",   "TEXT"),
         ("default_payment_method",   "TEXT DEFAULT 'credit_card'"),
-    ]
-    for col, typedef in new_cols:
-        if col not in cols:
+    ]:
+        if col not in users_cols:
             conn.execute(f"ALTER TABLE users ADD COLUMN {col} {typedef}")
+
+    orders_cols = {row["name"] for row in conn.execute("PRAGMA table_info(orders)").fetchall()}
+    for col, typedef in [
+        ("discount_code",   "TEXT"),
+        ("discount_amount", "REAL DEFAULT 0"),
+    ]:
+        if col not in orders_cols:
+            conn.execute(f"ALTER TABLE orders ADD COLUMN {col} {typedef}")
+
     conn.commit()
     conn.close()

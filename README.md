@@ -52,6 +52,7 @@ python seed.py
 - 4 หมวดหมู่ (Running, Casual, Basketball, Lifestyle)
 - 12 สินค้า
 - 3 user accounts
+- 4 discount codes (ไม่มีกำหนดเวลา ใช้ได้ไม่จำกัด — สำหรับ spike/performance test)
 
 ### 4. Start server
 
@@ -105,6 +106,7 @@ chmod +x run.sh && ./run.sh
 | `/admin/index.html` | Admin – dashboard stats |
 | `/admin/products.html` | Admin – จัดการสินค้า (CRUD) |
 | `/admin/orders.html` | Admin – จัดการออเดอร์ (update status) |
+| `/admin/discounts.html` | Admin – จัดการ discount codes (CRUD) |
 
 ---
 
@@ -156,8 +158,30 @@ Query params สำหรับ `GET /products`:
 | Method | Endpoint | Auth | คำอธิบาย |
 |--------|----------|------|----------|
 | GET | `/orders` | User | ประวัติคำสั่งซื้อของตนเอง |
-| POST | `/orders` | User | สั่งซื้อ (จากตะกร้า) |
+| POST | `/orders` | User | สั่งซื้อ (จากตะกร้า) รับ `discount_code` แบบ optional |
 | GET | `/orders/{id}` | User | รายละเอียดคำสั่งซื้อ |
+
+### Discount Codes
+| Method | Endpoint | Auth | คำอธิบาย |
+|--------|----------|------|----------|
+| POST | `/discount-codes/validate` | User | ตรวจสอบ discount code ก่อน checkout |
+| GET | `/admin/discount-codes` | Admin | รายการ discount codes ทั้งหมด |
+| POST | `/admin/discount-codes` | Admin | สร้าง discount code ใหม่ |
+| PUT | `/admin/discount-codes/{id}` | Admin | แก้ไข discount code |
+| DELETE | `/admin/discount-codes/{id}` | Admin | ลบ discount code |
+
+**Discount Code Types:**
+- `percentage` — ส่วนลดเป็น % ของยอดรวม (เช่น 10 = 10%)
+- `fixed` — ส่วนลดเป็นจำนวนเงินคงที่ (เช่น 100 = ลด ฿100)
+
+**Seeded codes สำหรับ Spike/Performance Test** (ไม่มีกำหนดอายุ ใช้ได้ไม่จำกัด):
+
+| Code | ประเภท | ส่วนลด |
+|------|--------|--------|
+| `SPIKE10` | percentage | 10% |
+| `SPIKE20` | percentage | 20% |
+| `FLAT100` | fixed | ฿100 |
+| `FLAT500` | fixed | ฿500 |
 
 ### Admin
 | Method | Endpoint | Auth | คำอธิบาย |
@@ -262,6 +286,10 @@ Order statuses: `pending` → `confirmed` → `processing` → `shipped` → `de
 [data-testid="payment-credit-card"]
 [data-testid="payment-bank-transfer"]
 [data-testid="payment-cod"]
+[data-testid="discount-code-input"]
+[data-testid="apply-discount-btn"]
+[data-testid="discount-message"]
+[data-testid="discount-line"]
 [data-testid="order-summary"]
 [data-testid="checkout-total"]
 [data-testid="place-order-btn"]
@@ -315,6 +343,7 @@ Order statuses: `pending` → `confirmed` → `processing` → `shipped` → `de
 [data-testid="admin-nav-dashboard"]
 [data-testid="admin-nav-products"]
 [data-testid="admin-nav-orders"]
+[data-testid="admin-nav-discounts"]
 
 [data-testid="stats-grid"]
 [data-testid="stat-total-orders"]
@@ -351,6 +380,21 @@ Order statuses: `pending` → `confirmed` → `processing` → `shipped` → `de
 [data-testid="status-filter-select"]
 [data-testid="status-select-{id}"]
 [data-testid="order-status-{id}"]
+
+[data-testid="add-discount-btn"]
+[data-testid="discount-table"]
+[data-testid="discount-row"]
+[data-testid="edit-discount-btn"]
+[data-testid="delete-discount-btn"]
+[data-testid="discount-modal"]
+[data-testid="discount-code-field"]
+[data-testid="discount-desc-field"]
+[data-testid="discount-type-field"]
+[data-testid="discount-value-field"]
+[data-testid="discount-expires-field"]
+[data-testid="discount-maxuses-field"]
+[data-testid="discount-active-field"]
+[data-testid="save-discount-btn"]
 ```
 
 ### Global
@@ -377,7 +421,8 @@ testweb/
 │       ├── products.py   # /api/products/*, /api/categories
 │       ├── cart.py       # /api/cart/*
 │       ├── orders.py     # /api/orders/*
-│       └── admin.py      # /api/admin/*
+│       ├── admin.py      # /api/admin/*
+│       └── discounts.py  # /api/discount-codes/*, /api/admin/discount-codes/*
 └── frontend/
     ├── js/
     │   ├── api.js        # Fetch wrapper + all API calls
@@ -387,7 +432,7 @@ testweb/
     ├── products.html
     ├── product.html
     ├── cart.html
-    ├── checkout.html
+    ├── checkout.html     # มี discount code input
     ├── login.html
     ├── register.html
     ├── orders.html
@@ -395,7 +440,8 @@ testweb/
     └── admin/
         ├── index.html
         ├── products.html
-        └── orders.html
+        ├── orders.html
+        └── discounts.html  # จัดการ discount codes
 ```
 
 ---

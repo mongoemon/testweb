@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from auth_utils import get_current_user
 from database import get_db
+from discount_utils import apply_discount, check_code_valid
 from models import OrderCreate
 
 router = APIRouter(prefix="/api/orders", tags=["orders"])
@@ -132,18 +133,40 @@ def place_order(data: OrderCreate, user: dict = Depends(get_current_user)):
             db.close()
             raise HTTPException(400, f"Not enough stock for {item['product_name']}")
 
-    total = round(sum(item["price"] * item["quantity"] for item in cart_items), 2)
+    subtotal = round(sum(item["price"] * item["quantity"] for item in cart_items), 2)
+
+    discount_amount = 0.0
+    applied_code = None
+    dc_row = None
+    if data.discount_code:
+        try:
+            dc_row = check_code_valid(db, data.discount_code)
+            discount_amount = apply_discount(subtotal, dc_row)
+            applied_code = dc_row["code"]
+        except HTTPException as exc:
+            db.close()
+            raise exc
+
+    total = round(subtotal - discount_amount, 2)
 
     cur = db.execute(
         """INSERT INTO orders (user_id, total_amount, status, shipping_name,
-           shipping_address, shipping_city, shipping_postal, shipping_phone, payment_method)
-           VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?)""",
+           shipping_address, shipping_city, shipping_postal, shipping_phone,
+           payment_method, discount_code, discount_amount)
+           VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?)""",
         (
             user["id"], total, data.shipping_name, data.shipping_address,
-            data.shipping_city, data.shipping_postal, data.shipping_phone, data.payment_method,
+            data.shipping_city, data.shipping_postal, data.shipping_phone,
+            data.payment_method, applied_code, discount_amount,
         ),
     )
     order_id = cur.lastrowid
+
+    if dc_row:
+        db.execute(
+            "UPDATE discount_codes SET current_uses = current_uses + 1 WHERE id=?",
+            (dc_row["id"],),
+        )
 
     for item in cart_items:
         db.execute(

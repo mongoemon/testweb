@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoesHub Admin — Discount Codes</title>
+  <link rel="stylesheet" href="/css/themes.css">
+  <script src="/js/theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { 50: 'rgb(var(--p-50) / <alpha-value>)', 100: 'rgb(var(--p-100) / <alpha-value>)', 300: 'rgb(var(--p-300) / <alpha-value>)', 400: 'rgb(var(--p-400) / <alpha-value>)', 500: 'rgb(var(--p-500) / <alpha-value>)', 600: 'rgb(var(--p-600) / <alpha-value>)', 700: 'rgb(var(--p-700) / <alpha-value>)' },
+      'on-primary': 'rgb(var(--p-text) / <alpha-value>)',
+    }}}}
+  </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<div id="nav-placeholder"></div>
+
+<div class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+  <!-- Admin nav -->
+  <div class="flex gap-3 mb-6 text-sm font-medium flex-wrap">
+    <a href="/admin/index.html"     data-testid="admin-nav-dashboard"  class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.dashboard"></a>
+    <a href="/admin/products.html"  data-testid="admin-nav-products"   class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.manageProducts"></a>
+    <a href="/admin/orders.html"    data-testid="admin-nav-orders"     class="bg-white px-4 py-2 rounded-lg hover:bg-gray-50 shadow-sm" data-i18n="admin.manageOrders"></a>
+    <a href="/admin/discounts.html" data-testid="admin-nav-discounts"  class="bg-primary-400 text-on-primary px-4 py-2 rounded-lg" data-i18n="admin.manageDiscounts"></a>
+  </div>
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800" data-i18n="admin.discount.title"></h1>
+    <button onclick="openModal()" data-testid="add-discount-btn"
+            class="bg-primary-400 text-on-primary px-5 py-2 rounded-lg font-semibold hover:bg-primary-300 transition-colors"
+            data-i18n="admin.discount.add"></button>
+  </div>
+
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+        <tr>
+          <th class="py-3 px-4 text-left" data-i18n="admin.discount.col.code"></th>
+          <th class="py-3 px-4 text-left" data-i18n="admin.discount.col.desc"></th>
+          <th class="py-3 text-center" data-i18n="admin.discount.col.type"></th>
+          <th class="py-3 text-center" data-i18n="admin.discount.col.value"></th>
+          <th class="py-3 text-center" data-i18n="admin.discount.col.expires"></th>
+          <th class="py-3 text-center" data-i18n="admin.discount.col.uses"></th>
+          <th class="py-3 text-center" data-i18n="admin.discount.col.status"></th>
+          <th class="py-3 text-center" data-i18n="admin.discount.col.manage"></th>
+        </tr>
+      </thead>
+      <tbody id="discount-table" data-testid="discount-table">
+        <tr><td colspan="8" class="text-center py-10 text-gray-400" data-i18n="loading"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="discount-modal" data-testid="discount-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div class="p-6">
+      <h2 id="modal-title" class="text-xl font-bold text-gray-800 mb-5"></h2>
+      <form id="discount-form" onsubmit="saveDiscount(event)" novalidate class="space-y-4">
+        <input type="hidden" id="edit-id" value="" />
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.discount.code"></label>
+          <input id="f-code" data-testid="discount-code-field" type="text"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400 uppercase"
+                 placeholder="SUMMER20" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.discount.desc"></label>
+          <input id="f-desc" data-testid="discount-desc-field" type="text"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.discount.type"></label>
+            <select id="f-type" data-testid="discount-type-field"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400">
+              <option value="percentage" data-i18n="admin.discount.type.pct"></option>
+              <option value="fixed" data-i18n="admin.discount.type.fixed"></option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.discount.value"></label>
+            <input id="f-value" data-testid="discount-value-field" type="number" min="0.01" step="0.01"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                   placeholder="10" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.discount.expires"></label>
+          <input id="f-expires" data-testid="discount-expires-field" type="datetime-local"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="admin.discount.maxUses"></label>
+          <input id="f-maxuses" data-testid="discount-maxuses-field" type="number" min="1" step="1"
+                 class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                 placeholder="100" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input id="f-active" data-testid="discount-active-field" type="checkbox" checked
+                 class="w-4 h-4 text-primary-500 rounded border-gray-300" />
+          <label for="f-active" class="text-sm font-medium text-gray-700" data-i18n="admin.discount.active"></label>
+        </div>
+
+        <p id="modal-error" class="text-red-500 text-sm hidden"></p>
+
+        <div class="flex gap-3 pt-2">
+          <button type="submit" data-testid="save-discount-btn"
+                  class="flex-1 bg-primary-400 text-on-primary py-2.5 rounded-lg font-semibold hover:bg-primary-300 transition-colors"
+                  data-i18n="btn.save"></button>
+          <button type="button" onclick="closeModal()"
+                  class="flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  data-i18n="btn.cancel"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-gray-900 text-gray-400 text-center py-4 text-xs mt-auto">
+  <span data-i18n="footer.admin"></span>
+</footer>
+
+<script src="/js/i18n.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/nav.js"></script>
+<script>
+  let allCodes = [];
+
+  async function loadDiscounts() {
+    try {
+      allCodes = await api.getAdminDiscountCodes();
+      renderTable(allCodes);
+    } catch (e) {
+      document.getElementById('discount-table').innerHTML =
+        `<tr><td colspan="8" class="text-center py-10 text-red-400">${e.detail || i18n.t('error.generic')}</td></tr>`;
+    }
+  }
+
+  function renderTable(codes) {
+    const tbody = document.getElementById('discount-table');
+    if (!codes.length) {
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-gray-400">${i18n.t('admin.noDiscounts')}</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = codes.map(dc => {
+      const typeLabel = dc.discount_type === 'percentage'
+        ? i18n.t('admin.discount.pct', dc.discount_value)
+        : i18n.t('admin.discount.fixed', dc.discount_value);
+      const expiresLabel = dc.expires_at
+        ? formatDate(dc.expires_at)
+        : `<span class="text-gray-400">${i18n.t('admin.discount.noExpiry')}</span>`;
+      const usesLabel = dc.max_uses
+        ? `${dc.current_uses} / ${dc.max_uses}`
+        : `${dc.current_uses} / <span class="text-gray-400">${i18n.t('admin.discount.unlimited')}</span>`;
+      const statusBadge = dc.is_active
+        ? `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">${i18n.t('admin.discount.active.yes')}</span>`
+        : `<span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full text-xs font-medium">${i18n.t('admin.discount.active.no')}</span>`;
+      return `
+        <tr class="border-t border-gray-100 hover:bg-gray-50" data-testid="discount-row">
+          <td class="py-3 px-4 font-mono font-bold text-primary-600">${dc.code}</td>
+          <td class="py-3 px-4 text-gray-600 max-w-xs truncate">${dc.description || '—'}</td>
+          <td class="py-3 text-center">${dc.discount_type === 'percentage' ? '%' : '฿'}</td>
+          <td class="py-3 text-center font-semibold">${typeLabel}</td>
+          <td class="py-3 text-center text-sm">${expiresLabel}</td>
+          <td class="py-3 text-center text-sm">${usesLabel}</td>
+          <td class="py-3 text-center">${statusBadge}</td>
+          <td class="py-3 text-center">
+            <div class="flex justify-center gap-2">
+              <button onclick="openModal(${dc.id})" data-testid="edit-discount-btn"
+                      class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors"
+                      data-i18n="btn.edit"></button>
+              <button onclick="deleteDiscount(${dc.id}, '${dc.code}')" data-testid="delete-discount-btn"
+                      class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors"
+                      data-i18n="btn.delete"></button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+    i18n.apply();
+  }
+
+  function openModal(id = null) {
+    const modal = document.getElementById('discount-modal');
+    const title = document.getElementById('modal-title');
+    document.getElementById('modal-error').classList.add('hidden');
+
+    if (id) {
+      const dc = allCodes.find(c => c.id === id);
+      if (!dc) return;
+      title.textContent = i18n.t('admin.discount.editTitle');
+      document.getElementById('edit-id').value   = dc.id;
+      document.getElementById('f-code').value    = dc.code;
+      document.getElementById('f-code').disabled = true;
+      document.getElementById('f-desc').value    = dc.description || '';
+      document.getElementById('f-type').value    = dc.discount_type;
+      document.getElementById('f-value').value   = dc.discount_value;
+      document.getElementById('f-expires').value = dc.expires_at
+        ? dc.expires_at.replace(' ', 'T').slice(0, 16) : '';
+      document.getElementById('f-maxuses').value = dc.max_uses ?? '';
+      document.getElementById('f-active').checked = !!dc.is_active;
+    } else {
+      title.textContent = i18n.t('admin.discount.addTitle');
+      document.getElementById('edit-id').value    = '';
+      document.getElementById('f-code').value     = '';
+      document.getElementById('f-code').disabled  = false;
+      document.getElementById('f-desc').value     = '';
+      document.getElementById('f-type').value     = 'percentage';
+      document.getElementById('f-value').value    = '';
+      document.getElementById('f-expires').value  = '';
+      document.getElementById('f-maxuses').value  = '';
+      document.getElementById('f-active').checked = true;
+    }
+    modal.classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('discount-modal').classList.add('hidden');
+  }
+
+  async function saveDiscount(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('modal-error');
+    errEl.classList.add('hidden');
+
+    const code  = document.getElementById('f-code').value.trim().toUpperCase();
+    const value = parseFloat(document.getElementById('f-value').value);
+    if (!code || isNaN(value) || value <= 0) {
+      errEl.textContent = i18n.t('admin.discount.err.req');
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const expiresRaw = document.getElementById('f-expires').value;
+    const maxUsesRaw = document.getElementById('f-maxuses').value;
+    const payload = {
+      description:    document.getElementById('f-desc').value.trim() || null,
+      discount_type:  document.getElementById('f-type').value,
+      discount_value: value,
+      expires_at:     expiresRaw ? expiresRaw.replace('T', ' ') + ':00' : null,
+      max_uses:       maxUsesRaw ? parseInt(maxUsesRaw, 10) : null,
+      is_active:      document.getElementById('f-active').checked,
+    };
+
+    const editId = document.getElementById('edit-id').value;
+    try {
+      if (editId) {
+        await api.updateAdminDiscountCode(parseInt(editId, 10), payload);
+        showToast(i18n.t('admin.discount.saved'));
+      } else {
+        await api.createAdminDiscountCode({ code, ...payload });
+        showToast(i18n.t('admin.discount.created'));
+      }
+      closeModal();
+      await loadDiscounts();
+    } catch (ex) {
+      errEl.textContent = ex.detail || i18n.t('error.generic');
+      errEl.classList.remove('hidden');
+    }
+  }
+
+  async function deleteDiscount(id, code) {
+    if (!confirm(i18n.t('admin.discount.delConfirm', code))) return;
+    try {
+      await api.deleteAdminDiscountCode(id);
+      showToast(i18n.t('admin.discount.deleted'));
+      await loadDiscounts();
+    } catch (ex) {
+      alert(ex.detail || i18n.t('error.generic'));
+    }
+  }
+
+  (async () => {
+    i18n.apply();
+    if (!auth.requireAdmin()) return;
+    await renderNav();
+    await loadDiscounts();
+  })();
+</script>
+</body>
+</html>

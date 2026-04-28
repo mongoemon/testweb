@@ -142,6 +142,48 @@ USERS = [
 ]
 
 
+SPIKE_CODES = [
+    {
+        "code": "SPIKE10",
+        "description": "Spike test — 10% off, unlimited, no expiry",
+        "discount_type": "percentage",
+        "discount_value": 10.0,
+    },
+    {
+        "code": "SPIKE20",
+        "description": "Spike test — 20% off, unlimited, no expiry",
+        "discount_type": "percentage",
+        "discount_value": 20.0,
+    },
+    {
+        "code": "FLAT100",
+        "description": "Spike test — 100 baht off, unlimited, no expiry",
+        "discount_type": "fixed",
+        "discount_value": 100.0,
+    },
+    {
+        "code": "FLAT500",
+        "description": "Spike test — 500 baht off, unlimited, no expiry",
+        "discount_type": "fixed",
+        "discount_value": 500.0,
+    },
+]
+
+
+def seed_discount_codes():
+    """Always-run: insert spike codes if they don't exist yet."""
+    db = get_db()
+    for dc in SPIKE_CODES:
+        db.execute(
+            """INSERT OR IGNORE INTO discount_codes
+               (code, description, discount_type, discount_value, expires_at, max_uses, is_active)
+               VALUES (?, ?, ?, ?, NULL, NULL, 1)""",
+            (dc["code"], dc["description"], dc["discount_type"], dc["discount_value"]),
+        )
+    db.commit()
+    db.close()
+
+
 def seed():
     init_db()
     db = get_db()
@@ -150,6 +192,7 @@ def seed():
     if existing > 0:
         print("[SKIP] Database already seeded.")
         db.close()
+        seed_discount_codes()
         return
 
     # Categories
@@ -179,11 +222,19 @@ def seed():
 
     db.commit()
     db.close()
+
+    seed_discount_codes()
+
     print("[OK] Seed data inserted successfully!")
     print("\n[TEST ACCOUNTS]")
     for u in USERS:
         role = "Admin" if u["is_admin"] else "User"
         print(f"   [{role}] username: {u['username']}  password: {u['password']}")
+    print("\n[DISCOUNT CODES] (no expiry, unlimited uses)")
+    print("   SPIKE10  — 10% off")
+    print("   SPIKE20  — 20% off")
+    print("   FLAT100  — 100 baht off")
+    print("   FLAT500  — 500 baht off")
 
 
 if __name__ == "__main__":

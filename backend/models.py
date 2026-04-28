@@ -119,13 +119,14 @@ class CartItemUpdate(BaseModel):
 # ── Orders ────────────────────────────────────────────────────────────────────
 
 class OrderCreate(BaseModel):
-    shipping_name:    str = Field(..., example="John Doe")
-    shipping_address: str = Field(..., example="123 Sukhumvit Rd, Khlong Toei")
-    shipping_city:    str = Field(..., example="Bangkok")
-    shipping_postal:  str = Field(..., example="10110")
-    shipping_phone:   str = Field(..., example="081-234-5678")
-    payment_method:   str = Field("credit_card", example="credit_card",
-                                  description="credit_card | bank_transfer | cod")
+    shipping_name:    str           = Field(..., example="John Doe")
+    shipping_address: str           = Field(..., example="123 Sukhumvit Rd, Khlong Toei")
+    shipping_city:    str           = Field(..., example="Bangkok")
+    shipping_postal:  str           = Field(..., example="10110")
+    shipping_phone:   str           = Field(..., example="081-234-5678")
+    payment_method:   str           = Field("credit_card", example="credit_card",
+                                            description="credit_card | bank_transfer | cod")
+    discount_code:    Optional[str] = Field(None, example="SPIKE10")
 
     model_config = {
         "json_schema_extra": {
@@ -176,6 +177,49 @@ class AddressUpdate(BaseModel):
     default_shipping_postal:  Optional[str] = Field(None, example="10110")
     default_shipping_phone:   Optional[str] = Field(None, example="081-234-5678")
     default_payment_method:   Optional[str] = Field(None, example="credit_card")
+
+
+# ── Discount Codes ────────────────────────────────────────────────────────────
+
+class DiscountCodeCreate(BaseModel):
+    code:           str            = Field(..., min_length=1, example="SUMMER20")
+    description:    Optional[str]  = Field(None, example="Summer sale 20% off")
+    discount_type:  str            = Field("percentage", example="percentage",
+                                           description="percentage | fixed")
+    discount_value: float          = Field(..., gt=0, example=20.0)
+    expires_at:     Optional[str]  = Field(None, example="2026-12-31T23:59:59",
+                                           description="ISO datetime or null for no expiry")
+    max_uses:       Optional[int]  = Field(None, ge=1, example=100,
+                                           description="Max uses or null for unlimited")
+    is_active:      Optional[bool] = Field(True, example=True)
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "summary": "10% off, unlimited, no expiry (performance test)",
+                    "value": {"code": "SPIKE10", "description": "Spike test - 10% off unlimited", "discount_type": "percentage", "discount_value": 10.0, "expires_at": None, "max_uses": None, "is_active": True},
+                },
+                {
+                    "summary": "Fixed 100 baht off, expires Dec 2026",
+                    "value": {"code": "FLAT100", "description": "100 baht discount", "discount_type": "fixed", "discount_value": 100.0, "expires_at": "2026-12-31T23:59:59", "max_uses": 500, "is_active": True},
+                },
+            ]
+        }
+    }
+
+
+class DiscountCodeUpdate(BaseModel):
+    description:    Optional[str]  = Field(None)
+    discount_type:  Optional[str]  = Field(None)
+    discount_value: Optional[float] = Field(None, gt=0)
+    expires_at:     Optional[str]  = Field(None)
+    max_uses:       Optional[int]  = Field(None, ge=1)
+    is_active:      Optional[bool] = Field(None)
+
+
+class DiscountValidateRequest(BaseModel):
+    code: str = Field(..., example="SPIKE10")
 
 
 class OrderStatusUpdate(BaseModel):
