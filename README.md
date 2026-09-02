@@ -410,6 +410,7 @@ Order statuses: `pending` → `confirmed` → `processing` → `shipped` → `de
 testweb/
 ├── backend/
 │   ├── main.py           # FastAPI app entry point + static file mount
+│   ├── observability.py  # JSON logging + request-id middleware (CloudWatch-ready)
 │   ├── database.py       # SQLite init + connection helper
 │   ├── models.py         # Pydantic request/response models
 │   ├── auth_utils.py     # JWT creation/decode, password hash, Depends helpers
@@ -423,6 +424,9 @@ testweb/
 │       ├── orders.py     # /api/orders/*
 │       ├── admin.py      # /api/admin/*
 │       └── discounts.py  # /api/discount-codes/*, /api/admin/discount-codes/*
+├── docs/
+│   └── QA_AWS_RUNBOOK.md  # QA guide: CloudWatch/SQS/SNS/S3/load-test/DR + IAM policy
+├── .mcp.json.example     # AWS MCP servers config (cp → .mcp.json to activate)
 └── frontend/
     ├── js/
     │   ├── api.js        # Fetch wrapper + all API calls
@@ -455,6 +459,65 @@ cd backend
 rm shop.db       # Windows: del shop.db
 python seed.py
 ```
+
+---
+
+## Observability & AWS (สำหรับ QA)
+
+### Structured logging (built-in, ไม่มี dependency เพิ่ม)
+
+ทุก request ถูก log เป็น JSON บรรทัดเดียวออก stdout โดย `backend/observability.py`:
+
+```json
+{"ts":"2026-09-02T14:03:11.482000+00:00","level":"INFO","logger":"shoeshub",
+ "message":"request","request_id":"7f3c...","method":"POST","path":"/api/orders",
+ "status":201,"latency_ms":42.8}
+```
+
+- ทุก response มี header `x-request-id` (ส่ง header นี้เข้ามาเองได้เพื่อ trace ข้าม service)
+- request ที่ช้า ≥ 1000ms ถูกยก level เป็น `WARNING`
+- บน ECS / App Runner / Lambda: stdout เข้า CloudWatch Logs อัตโนมัติ แล้ว query ด้วย Logs Insights ได้ทันที (ตัวอย่าง query ใน [docs/QA_AWS_RUNBOOK.md](docs/QA_AWS_RUNBOOK.md) §3)
+- เพิ่ม field เองในโค้ดได้ด้วย `log_event("order_placed", request_id=..., amount=...)`
+
+### AWS Agent Toolkit + MCP (ตั้งค่าครั้งเดียวต่อเครื่อง)
+
+ให้ Claude Code เข้าถึง AWS (CloudWatch / SQS / SNS / S3 / Backup) ผ่าน MCP:
+
+```powershell
+# 1. ติดตั้ง AWS CLI v2 (build ที่มี agent-toolkit)
+irm 'https://awscli.amazonaws.com/v2/install.ps1' | iex
+
+# 2. login ผ่านเบราว์เซอร์ (credentials อายุ 12 ชม. ต่อได้ 90 วัน)
+aws configure set region ap-southeast-1 --profile shoeshub-qa
+aws login --region ap-southeast-1 --profile shoeshub-qa
+aws sts get-caller-identity --profile shoeshub-qa      # ต้องได้ Account/Arn
+
+# 3. ติดตั้ง toolkit + AWS skills (23 ตัว → ~/.claude/skills/)
+aws configure agent-toolkit --yes --region us-east-1 --profile shoeshub-qa
+```
+
+จากนั้นเพิ่ม MCP server ใน `~/.claude.json` (ขั้นนี้ auto-write มัก crash บน Windows Thai codepage — เติมมือ):
+
+```json
+"aws-mcp": {
+  "command": "uvx",
+  "args": ["mcp-proxy-for-aws@latest", "https://aws-mcp.us-east-1.api.aws/mcp",
+           "--metadata", "INSTALL_SOURCE=aws-cli"],
+  "env": { "AWS_MCP_PROXY_PROFILES": "shoeshub-qa" },
+  "timeout": 100000,
+  "transport": "stdio"
+}
+```
+
+ปิด-เปิด Claude Code ใหม่ → `/mcp` ต้องเห็น `aws-mcp` connected
+
+- **เรียกผ่าน MCP ห้ามใส่ `--profile`** — proxy กำหนดจาก env `AWS_MCP_PROXY_PROFILES` ให้แล้ว (ใส่ `--region` ได้)
+- **ถ้าเจอ error `'charmap' codec`** ตอนรัน `aws` ให้ `chcp 65001` ก่อน หรือ set user env var `PYTHONUTF8=1`
+- ทางเลือก: `.mcp.json.example` (project scope) รวม awslabs MCP servers รายตัว — `cp` เป็น `.mcp.json` ถ้าอยากใช้แทน `aws-mcp`
+
+### เอกสารเต็ม
+
+[docs/QA_AWS_RUNBOOK.md](docs/QA_AWS_RUNBOOK.md) — วิธีตรวจ CloudWatch / SQS-SNS / S3 / load-test bottleneck / DR drill แบบ QA + IAM policy read-only
 
 ---
 

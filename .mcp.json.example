@@ -1,0 +1,40 @@
+{
+  "//": "QA AWS MCP servers — คัดลอกเป็น .mcp.json แล้วแก้ AWS_PROFILE / AWS_REGION ให้ตรงกับของคุณ",
+  "//prereqs": "1) pip install uv   2) aws configure sso --profile shoeshub-qa   3) เปิด Claude Code ใหม่",
+  "mcpServers": {
+    "aws-cloudwatch": {
+      "command": "uvx",
+      "args": ["awslabs.cloudwatch-mcp-server@latest"],
+      "env": {
+        "AWS_PROFILE": "shoeshub-qa",
+        "AWS_REGION": "ap-southeast-1",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      }
+    },
+    "aws-api": {
+      "command": "uvx",
+      "args": ["awslabs.aws-api-mcp-server@latest"],
+      "env": {
+        "AWS_PROFILE": "shoeshub-qa",
+        "AWS_REGION": "ap-southeast-1",
+        "READ_OPERATIONS_ONLY": "true",
+        "AWS_API_MCP_WORKING_DIR": "/tmp/aws-mcp"
+      }
+    },
+    "aws-messaging": {
+      "command": "uvx",
+      "args": ["awslabs.amazon-sns-sqs-mcp-server@latest"],
+      "env": {
+        "AWS_PROFILE": "shoeshub-qa",
+        "AWS_REGION": "ap-southeast-1"
+      }
+    },
+    "aws-knowledge": {
+      "command": "uvx",
+      "args": ["awslabs.aws-knowledge-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      }
+    }
+  }
+}

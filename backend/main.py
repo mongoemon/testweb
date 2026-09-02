@@ -6,9 +6,12 @@ from fastapi.staticfiles import StaticFiles
 
 import config
 from database import init_db, migrate_db
+from observability import RequestContextMiddleware, configure_logging, log_event
 from routes import admin, auth, cart, orders, products
 from routes import discounts
 from seed import seed
+
+configure_logging("DEBUG" if config.DEBUG else "INFO")
 
 TAGS_METADATA = [
     {
@@ -108,6 +111,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Outermost middleware: tags every request with an id and logs one JSON line.
+app.add_middleware(RequestContextMiddleware)
+
 app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(cart.router)
@@ -126,11 +132,13 @@ def startup():
     migrate_db()
     if config.AUTO_SEED:
         seed()
-    env_label = config.ENVIRONMENT.upper()
-    print(f"[ENV] {env_label} | debug={config.DEBUG} | auto_seed={config.AUTO_SEED}")
-    print(f"[OK] Database : {config.DATABASE_URL}")
-    print(f"[OK] Frontend : http://localhost:8000/")
-    print(f"[OK] Swagger  : http://localhost:8000/docs")
+    log_event(
+        "startup",
+        environment=config.ENVIRONMENT.upper(),
+        debug=config.DEBUG,
+        auto_seed=config.AUTO_SEED,
+        database=config.DATABASE_URL,
+    )
 
 
 if __name__ == "__main__":
